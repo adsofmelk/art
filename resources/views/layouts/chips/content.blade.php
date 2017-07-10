@@ -23,7 +23,10 @@
                 <!-- /.row -->
             </div>
             <!-- BEGIN CONTENT /.container-fluid -->
+            <div class='row' style='padding:12px 5px 20px 5px;' id='content'>
             	@yield('content')
+            </div>	
             <!-- END CONTENT /.container-fluid -->
+            
         </div>
         <!-- End Page Content /#page-wrapper -->

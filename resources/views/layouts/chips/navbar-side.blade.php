@@ -7,35 +7,18 @@
                             <a href=""><i class="{{$submenu['icon']}}"></i> {{$submenu['name']}}</a>
                             <ul class="nav nav-second-level">
                             	<li>
-                            	<a href="/factura"><i class="fa fa-caret-square-o-down fa-fw"></i> Facturación</a>
+                            	<a href="/factura"><i class="fa fa-caret-square-o-down fa-fw"></i> Disciplinarios</a>
                                 	<ul class="nav nav-third-level">
                                 		<li>
-                                			<a href="/factura/create"><i class="fa fa-plus fa-fw"></i> Nueva Factura</a>
+                                			<a href="/disciplinarios/create"><i class="fa fa-plus fa-fw"></i> Nuevo Proceso</a>
                                 		</li>
                                 		<li>
-                                			<a href="/factura"><i class="fa fa-list fa-fw"></i> Listado Facturas</a>
-                                		</li>
-                                		<li>
-                                			<a href="/factura"><i class="fa fa-search fa-fw"></i> Buscar Facturas</a>
+                                			<a href="/disciplinarios"><i class="fa fa-list fa-fw"></i> Procesos Activos</a>
                                 		</li>
                                 	</ul>
                                 
                                 </li>
-                                <li>
-                            	<a href="/factura"><i class="fa fa-caret-square-o-down fa-fw"></i> Cartera</a>
-                                	<ul class="nav nav-third-level">
-                                		<li>
-                                			<a href="/factura/create"><i class="fa fa-plus fa-fw"></i> Nueva Factura</a>
-                                		</li>
-                                		<li>
-                                			<a href="/factura"><i class="fa fa-list fa-fw"></i> Listado Facturas</a>
-                                		</li>
-                                		<li>
-                                			<a href="/factura"><i class="fa fa-search fa-fw"></i> Buscar Facturas</a>
-                                		</li>
-                                	</ul>
                                 
-                                </li>
                             </ul>
                         </li>
                   		@endforeach      

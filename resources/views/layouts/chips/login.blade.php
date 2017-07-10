@@ -10,7 +10,7 @@
                         <h3 class="panel-title"> </h3>
                     </div>
                     <div class="panel-body">
-                        {!!Form::open(['route'=>'log.store','method'=>'POST','role'=>'form'])!!}
+                        {!!Form::open(['route'=>'login','method'=>'POST','role'=>'form'])!!}
                             <fieldset>
                                 <div class="form-group">
                                     {!!Form::email('email',null,['class'=>'form-control','placeholder'=>'Username','autofocus'=>'true'])!!}

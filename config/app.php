@@ -179,6 +179,12 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+    		
+    	//AUDIT
+    	OwenIt\Auditing\AuditingServiceProvider::class,
+    		
+    	//DATA TABLES
+    	Yajra\Datatables\DatatablesServiceProvider::class,
 
     ],
 
@@ -230,6 +236,9 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Form' => Collective\Html\FormFacade::class,
         'Html' => Collective\Html\HtmlFacade::class,
+    	
+    	//DATA TABLES
+    	'Datatables' => Yajra\Datatables\Facades\Datatables::class,
 
     ],
 

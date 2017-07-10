@@ -51,8 +51,23 @@ return [
             'collation' => 'utf8mb4_unicode_ci',
             'prefix' => '',
             'strict' => true,
-            'engine' => null,
+            'engine' => 'InnoDB',
         ],
+    	
+    	'mrchispa' => [
+    				'driver' => 'mysql',
+    				'host' => env('DB_HOST', '127.0.0.1'),
+    				'port' => env('DB_PORT', '3306'),
+    				'database' => env('DB_DATABASE', 'mrchispa'),
+    				'username' => env('DB_USERNAME', 'articulacion'),
+    				'password' => env('DB_PASSWORD', 'pepelon2012'),
+    				'unix_socket' => env('DB_SOCKET', ''),
+    				'charset' => 'utf8mb4',
+    				'collation' => 'utf8mb4_unicode_ci',
+    				'prefix' => '',
+    				'strict' => true,
+    				'engine' => 'InnoDB',//'MyISAM',
+    		],
 
         'pgsql' => [
             'driver' => 'pgsql',

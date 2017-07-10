@@ -27,18 +27,28 @@
     <!-- Jquery UI CSS -->
     {!!Html::style('/js/jquery-ui/jquery-ui.min.css')!!}
     
+    <!-- Bootrtrap Switch CSS -->
+    {!!Html::style('/css/bootstrap-switch.min.css')!!}
+    
+    <!-- DataTables CSS -->
+    {!!Html::style('/css/jquery.dataTables.min.css')!!}
+    
 	<!-- jQuery -->
 	{!!Html::script("/js/jquery-3.1.0.min.js")!!}
 	
 	<!-- jQuery UI-->
 	{!!Html::script("/js/jquery-ui/jquery-ui.min.js")!!}
+	
+	 <!-- Bootstrap Switch JS-->
+		{!!Html::script("/js/bootstrap-switch.min.js")!!}
+		
 
 	<style>
         .result-set { margin-top: 1em }
     </style>
     <!-- Scripts -->
     <script>
-        window.Laravel = {!! json_encode(['csrfToken' => csrf_token(),]) !!};
+        window.Laravel = {!! json_encode(['csrfToken' => csrf_token()]) !!};
     </script>
     
 
@@ -72,6 +82,11 @@
 		
 	    <!-- Custom Theme JavaScript -->
 	    {!!Html::script("/app/sb-admin/dist/js/sb-admin-2.js")!!}
+	    
+	    
+	   
+		<!-- DataTables JS-->
+		{!!Html::script("/js/jquery.dataTables.min.js")!!}
 	
 	</body>
 
