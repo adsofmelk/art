@@ -61,13 +61,14 @@
 {!!Html::script("/js/bootstrap-switch.min.js")!!}
 	
 
-<!-- DataTables JS -->
-	{!!Html::style('/css/datatables.min.css')!!}
-	{!!Html::script("/js/datatables.min.js")!!}
+@yield('csss')
+
+
+	
   
 </head>
 
-<body class="hold-transition skin-red sidebar-mini">
+<body class="hold-transition skin-red sidebar-mini  sidebar-collapse">
 	
 	<div class="wrapper">
 	
@@ -83,6 +84,8 @@
 
 <!-- Bootstrap 3.3.7 -->
 {!!Html::script("/adminLTE-2.4/bower_components/bootstrap/dist/js/bootstrap.min.js")!!}
+
+
 
 <!-- AdminLTE App -->
 {!!Html::script("/adminLTE-2.4/dist/js/adminlte.min.js")!!}

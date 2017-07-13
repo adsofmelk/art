@@ -28,9 +28,9 @@ Route::group( ['middleware' => ['auth']], function() {
     Route::resource('users', 'UserController');
     Route::resource('roles', 'RoleController');
     Route::resource('personas', 'PersonasController');
-    Route::resource('disciplinarios', 'DSC_DisciplinariosController');
-    Route::resource('dsc_tiposfalta', 'DSC_TiposfaltaController');
-    Route::resource('dsc_procesos', 'DSC_ProcesosController');
+    Route::resource('disciplinarios', 'disciplinarios\DSC_DisciplinariosController');
+    Route::resource('dsc_tiposfalta', 'disciplinarios\DSC_TiposfaltaController');
+    Route::resource('dsc_procesos', 'disciplinarios\DSC_ProcesosController');
     Route::get('buscarcontratacionporcedula/{term}','MrChispaContratacionesController@buscarContratacionxCedula');
     Route::get('detallecontratacion/{id}','MrChispaContratacionesController@obtenerDetalleContratacion');
     Route::get('obtenercampospruebas/{id}','MrChispaContratacionesController@obtenerCamposPruebas');
