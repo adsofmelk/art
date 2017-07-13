@@ -1,11 +1,12 @@
-	<div class="row">
+
+	<div class="row" style="min-height: 100%; min-height: 100vh; display: flex; align-items: center;">
             <div class="col-md-4 col-md-offset-4">
                 <div class="login-panel panel panel-default">
                     <div class="panel-heading">
                     	<h2 class="row">
                     	<div class='col-lg-1'> </div>
-                    	<div class='col-lg-3'><i class="fa fa-user-md fa-2x	"></i></div>
-                    	<div class='col-lg-8'>{{ config('app.name', '') }}</div>
+                    	<div class='col-lg-3'><i class="fa fa-cubes fa-2x"></i></div>
+                    	<div class='col-lg-8'>Mr Chispa II</div>
                     	</h2>
                         <h3 class="panel-title"> </h3>
                     </div>
@@ -24,7 +25,7 @@
                                 </div>	
                                 
                                 
-                                {!!Form::submit('Ingresar',['class'=>'btn btn-lg btn-success btn-block'])!!}
+                                {!!Form::submit('Ingresar',['class'=>'btn btn-lg btn-danger btn-block'])!!}
                                 {!!Form::close()!!}
                             </fieldset>
                         </form>

@@ -1,16 +1,13 @@
 @extends('layouts.main')
 
-@section('title', 'Nuevo Proceso')
+@include('dsc.procesos.menu')
+
+@section('title', 'Nuevo Proceso Disciplinario')
+@section('desc','Debera adjuntar las pruebas requeridas segun el tipo de falta')
+
+
 
 @section('content')
-    <div class="row">
-        <div class="col-md-5">
-            <h3>Nuevo Proceso Disciplinario</h3>
-        </div>
-        <div class="col-md-7 page-action text-right">
-            <a href="{{ route('disciplinarios.index') }}" class="btn btn-default btn-sm"> <i class="fa fa-arrow-left"></i> Regresar</a>
-        </div>
-    </div>
 
     <div class="row">
         
@@ -18,7 +15,14 @@
                 @include('dsc.procesos._form')
                 <!-- Submit Form Button -->
                 <div class='col-lg-12'>
-                {!!Form::button("Guardar",["class"=>"btn btn-primary",'id'=>'btn-save', 'disabled'=>'true'])!!}
+	                <div class='col-lg-3'>
+	                	{!!Form::button("Guardar",["class"=>"btn btn-primary",'id'=>'btn-save', 'disabled'=>'true'])!!}
+	                </div>
+                
+                	<div class='col-lg-2' id='spinner_ico' style='display:none;'>
+                		<i class="fa fa-circle-o-notch fa-spin" style="font-size:24px"></i>
+                	</div>
+                
                 </div>
             {!! Form::close() !!}
         

@@ -13,7 +13,7 @@
 
 Route::get('/', function () {
 	if (Auth::guest()){
-		return view('welcome');
+		return Redirect::to('/login');
 	}else{
 		return Redirect::to('/home');
 	}

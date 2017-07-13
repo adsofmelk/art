@@ -1,8 +1,8 @@
-
-    
-
-
 $('document').ready(function(){
+	
+	//INICIALIZAR SWITCH DE SOLICITUD DE RETIRO
+	$("[name='solicitaretirotemporal']").bootstrapSwitch({'checked':false});
+	
 	
 	$('#tablaDatos').DataTable({ //DATATABLES PLUGIN INICIALIZADOR
 			'processing' : true,
@@ -12,9 +12,8 @@ $('document').ready(function(){
             },
 			'ajax' : '/dsc_procesos',
 			'columns':[
+				
 				{data : 'nombresolicitante'},
-				{data : 'solinombrecentroscosto'},
-				{data : 'solinombresubcentroscosto'},
 				{data : 'nombreresponsable'},
 				{data : 'respodocumento'},
 				{data : 'responombrecentroscosto'},
@@ -23,8 +22,12 @@ $('document').ready(function(){
 				{data : 'numeropruebas'},
 				{data : 'fechaetapa'},
 				{data : 'diasetapa'}
-			]
-	}); 
+			],
+			
+		    'order': [[1, 'asc']],
+	});
+	
+	
 	
 	$('#documentoresponsable').focus(); //FOCUS INICIAL EN EL CAMPO CEDULA
 			
@@ -60,6 +63,7 @@ $('document').ready(function(){
 			 $('#lb_centrocosto').html(result.nombrecentrocosto + " ");
 			 $('#lb_subcentrocosto').html(result.nombresubcentrocosto + " ");
 			 $('#lb_campania').html(result.nombrecampania + " ");
+			 $('#lb_sede').html(result.nombresede + " ");
 			 
 			 //FORM
 			 $('#responsable_id').val(id);
@@ -145,12 +149,15 @@ $('document').ready(function(){
 	///GUARDAR PROCESO DISCIPLINARIO
 	 $('#btn-save').click(function(){
 		 
-		 var formdata = new FormData($('#formulario')[0]);
+		 $('#btn-save').prop('disabled', true); // DESHABILITAR BOTON DE ENVIO
+		 $('#spinner_ico').show(); //MOSTRAR SPINNER
+		 
+		 var formdata = new FormData($('#formulario')[0]); // OBTENER REFERENCIA AL FORMULARIO
 		 
 		 $.ajax({
-	         url: "/dsc_procesos/",
+	         url: "/dsc_procesos",
 	         type: "POST",
-	         headers : {'X-CSRF-TOKEN': window.Laravel.csrfToken},
+	         headers : {'X-CSRF-TOKEN': window.Laravel.csrfToken}, //TOCKER DEL FORM
 	         data : formdata,
 	         cache : false,
 	         contentType : false,
@@ -166,7 +173,9 @@ $('document').ready(function(){
 	        		 $('#content').load('/dsc_procesos/' + result.iddsc_procesos);
 	        	 }else{
 	        		 alert(result.detalle);
+	        		 $('#btn-save').prop('disabled', false);
 	        	 }
+	        	 $('#spinner_ico').hide();
 	         },
 	         error : function(jqXHR, textStatus, errorThrown) {
 	        	 
@@ -174,10 +183,11 @@ $('document').ready(function(){
 	        	 $.each(jqXHR.responseJSON, function(index, element) {
 	        		    alert(element); 
 	        		});
-	        	 
+	        	 $('#btn-save').prop('disabled', false);
+	        	 $('#spinner_ico').hide();
 	         },
 	
-	         timeout: 120000,
+	         timeout: 1200000, // VEINTE MINUTOS DE TIMEOUT (20*60*1000)
 	     });
 	 });
 	 // FIN GUARDAR DISCIPLINARIO

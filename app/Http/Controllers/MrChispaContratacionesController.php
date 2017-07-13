@@ -10,7 +10,7 @@ class MrChispaContratacionesController extends Controller
     public function buscarContratacionxCedula($term){
     	
     	$contrataciones = \App\MrChispaContratacionesModel::
-    		select(DB::raw('distinct concat(cedula," - ",nombres,apellidos) as label, id as value'))
+    		select(DB::raw('distinct concat(cedula," - ", nombres," ", apellidos) as label, id as value'))
     	->where('cedula','like',$term.'%')
     	->limit(8)
     	->get();
@@ -29,7 +29,7 @@ class MrChispaContratacionesController extends Controller
 			$return['nombrecentrocosto'] = ($return['centrocosto_id']!=null)?\App\CentroscostoModel::find($return['centrocosto_id'])->nombre:null;
 			$return['nombresubcentrocosto'] = ($return['subcentrocosto_id']!=null)?\App\SubcentroscostoModel::find($return['subcentrocosto_id'])->nombre:null;
 			$return['nombrecampania'] = ($return['campania_id']!=null)?\App\CampaniasModel::find($return['campania_id'])->nombre:null;
-			//$return['nombresede'] = ($return['sede_id']!=null)?\App\CampaniasModel::find($return['sede_id'])->nombre:null;
+			$return['nombresede'] = ($return['sede_id']!=null)?\App\SedesModel::find($return['sede_id'])->nombre:null;
 		}
 		return response()->json($return);
 	}

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Auth;
 
 
 class DSC_DisciplinariosController extends Controller
@@ -26,9 +27,11 @@ class DSC_DisciplinariosController extends Controller
     {
     	$tiposfalta = \App\DSC_TiposfaltaModel::orderby('nombre','ASC')->pluck('nombre','iddsc_tiposfalta');
     	$nivelesafectacion = \App\DSC_NivelesafectacionModel::orderby('iddsc_nivelesafectacion','ASC')->pluck('nombre','iddsc_nivelesafectacion');
+    	$solicitante = \App\View_UsersPersonasModel::where(['idpersonas' => Auth::user()->personas_idpersonas])->first();
     	return view('dsc.procesos.create',[
     			'tiposfalta'=>$tiposfalta,
-    			'nivelesafectacion'=>$nivelesafectacion,						
+    			'nivelesafectacion'=>$nivelesafectacion,
+    			'solicitante' => $solicitante,
     		]);
     }
 

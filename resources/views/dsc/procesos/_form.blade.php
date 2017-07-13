@@ -7,31 +7,31 @@
 	  <div class="panel-body">
 	  	<div class='col-lg-3'>
 	  		{!! Form::label('solicita', 'Solicita') !!}
-	  		<div class='bg-info'>Solocitante</div>
+	  		<div class='bg-info'>{{$solicitante->nombres}} {{$solicitante->apellidos}}</div>
 	  	</div>
 	  	<div class='col-lg-3'>
 	  		{!! Form::label('cedula', 'Cedula') !!}
-	  		<div class='bg-info'>111111</div>
+	  		<div class='bg-info'>{{$solicitante->documento}}&nbsp;</div>
 	  	</div>
 	  	<div class='col-lg-3'>
 	  		{!! Form::label('centrocosto', 'Centro Costo') !!}
-	  		<div class='bg-info'>centro</div>
+	  		<div class='bg-info'>{{$solicitante->nombrecentroscosto}}</div>
 	  	</div>
 	  	<div class='col-lg-3'>
 	  		{!! Form::label('campania', 'Campaña') !!}
-	  		<div class='bg-info'>?????</div>
+	  		<div class='bg-info'>&nbsp;</div>
 	  	</div>
 	  	<div class='col-lg-3'>
 	  		{!! Form::label('fecha', 'Fecha Solicitud') !!}
-	  		<div class='bg-info'>Solocitante</div>
+	  		<div class='bg-info'>{!!date('Y-m-d')!!}</div>
 	  	</div>
 	  	<div class='col-lg-3'>
 	  		{!! Form::label('cargo', 'Cargo') !!}
-	  		<div class='bg-info'>111111</div>
+	  		<div class='bg-info'>&nbsp;</div>
 	  	</div>
 	  	<div class='col-lg-3'>
 	  		{!! Form::label('subcentro', 'SubCentro Costo') !!}
-	  		<div class='bg-info'>centro</div>
+	  		<div class='bg-info'>{{$solicitante->nombresubcentroscosto}}</div>
 	  	</div>
 	  </div>
 	</div>
@@ -113,9 +113,9 @@
 	  		{{Form::select('dsc_nivelesafectacion_iddsc_nivelesafectacion',$nivelesafectacion,null,['id'=>'dsc_tiposfalta_iddsc_tiposfalta','class'=>'form-control','placeholder'=>'Seleccione un nivel'])}}
 	  	</div>
 	  	<div class='col-lg-4 text-center'>
-	  		{!! Form::label('recomiendaretiro', 'Retirar Temporalmente de la Operación') !!}
-	  		<input type="checkbox" data-size="small" data-on-color="danger" data-on-text="Si" data-off-text="No"  name="solicitaretirotemporal" >
-	  		<script>$("[name='recomiendaretiro']").bootstrapSwitch();</script>
+	  		{!! Form::label('recomiendaretiro', 'Retirar Temporalmente de la Operación') !!}<br>
+	  		<input type="checkbox" class='form-comtrol' data-size="small" data-on-color="danger" data-on-text="Si" data-off-text="No"  name="solicitaretirotemporal" >
+	  		
 	  	</div>
 	  	<div class='col-lg-12'>
 	  		<div class='col-lg-6' style='margin-top: 20px;' >
