@@ -20,9 +20,12 @@ class Helpers {
 	
 	private static $usuario = null;
 	
-	public static function getUsuario(){
+	public static function getUsuario($idusers = null){
 		if(!self::$usuario){
-			self::$usuario= \App\View_UsersPersonasModel::where(['idusers' => Auth::user()->id])->first();
+			if($idusers == null){
+				$idusers = Auth::user()->id;
+			}
+			self::$usuario= \App\View_UsersPersonasModel::where(['idusers' => $idusers])->first();
 		}
 		return self::$usuario;
 		
