@@ -5,15 +5,13 @@
 @section('content')
 
     <div class="row">
-        <div class="col-md-5">
-            <h3>Editar Usuario {{ $user->first_name }}</h3>
-        </div>
-        <div class="col-md-7 page-action text-right">
+        
+        <div class="col-md-12 page-action text-right">
             <a href="{{ route('users.index') }}" class="btn btn-default btn-sm"> <i class="fa fa-arrow-left"></i> Regresar</a>
         </div>
     </div>
 
-    <div class="wrapper wrapper-content animated fadeInRight">
+    <div class="wrapper wrapper-content animated fadeInRight" style='background: #fff;'>
         <div class="row">
             <div class="col-lg-12">
                 <div class="ibox float-e-margins">

@@ -68,8 +68,12 @@
   
 </head>
 
-<body class="hold-transition skin-red sidebar-mini  sidebar-collapse">
-	
+<body class="hold-transition skin-red sidebar-mini"> <!--    sidebar-collapse  -->
+	<div id='spinner' class='containerspinner'>
+		 <div  class='spinnerico'>
+		 	<i class='fa fa-circle-o-notch fa-spin'></i>
+		 </div> 
+	</div>
 	<div class="wrapper">
 	
 			@if(Auth::check())			

@@ -7,7 +7,7 @@ use Auth;
 use App\Http\Controllers\Controller;
 
 
-class DSC_DisciplinariosController extends Controller
+class DSC_AmpliacionController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,7 +16,7 @@ class DSC_DisciplinariosController extends Controller
      */
     public function index()
     {
-        return view('disciplinarios.index');
+        //
     }
 
     /**
@@ -26,14 +26,7 @@ class DSC_DisciplinariosController extends Controller
      */
     public function create()
     {
-    	$tiposfalta = \App\DSC_TiposfaltaModel::orderby('nombre','ASC')->pluck('nombre','iddsc_tiposfalta');
-    	$nivelesafectacion = \App\DSC_NivelesafectacionModel::orderby('iddsc_nivelesafectacion','ASC')->pluck('nombre','iddsc_nivelesafectacion');
-    	$solicitante = \App\View_UsersPersonasModel::where(['idpersonas' => Auth::user()->personas_idpersonas])->first();
-    	return view('disciplinarios.create',[
-    			'tiposfalta'=>$tiposfalta,
-    			'nivelesafectacion'=>$nivelesafectacion,
-    			'solicitante' => $solicitante,
-    		]);
+    	//
     }
 
     /**
@@ -64,7 +57,7 @@ class DSC_DisciplinariosController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id) //EVALUACION DEL PROCESO
+    public function edit($id) //AMPLIACION DEL PROCESO
     {
     	$proceso = \App\View_DSC_ListadoprocesosModel::where(['iddsc_procesos'=>$id])->first();
     	$fechas = \App\DSC_FechasfaltasModel::where(['dsc_procesos_iddsc_procesos' => $id ])->get();
@@ -72,7 +65,7 @@ class DSC_DisciplinariosController extends Controller
     	$referenciafalta = \App\DSC_TiposfaltaModel::find($proceso->iddsc_tiposfalta);
     	$tiposdecisionesevaluacion = \App\DSC_TiposdecisionesevaluacionModel::pluck('nombre','iddsc_tiposdecisionesevaluacion');
     	$tiposmotivoscierre = \App\DSC_TiposmotivoscierreModel::pluck('nombre','iddsc_tiposmotivoscierre');
-    	return view('disciplinarios.evaluacion',[
+    	return view('disciplinarios.ampliacion',[
     			'proceso' => $proceso,
     			'fechas' => $fechas,
     			'pruebas' => $pruebas,

@@ -34,10 +34,36 @@ $('document').ready(function(){
 	        title: 'Días'
 	    },   
 	    
-	    ]
+	    ],
 	});
 	
 	//Fin Inicializador bootstrap-table
+	
 		 
 });
+
+//Vista Detail Formater
+
+function detalleRow(index, row) {
+	
+    $.ajax({
+        url: "/dsc_procesos/" + row.iddsc_procesos,
+        type: "GET",
+        headers : {'X-CSRF-TOKEN': window.Laravel.csrfToken},
+        //data: {'id':$('#dsc_tiposfalta_iddsc_tiposfalta').val()},
+        contentType: 'application/json; charset=utf-8',
+        
+        success: function(result) {
+	       	$('#c'+row.iddsc_procesos).html(result);
+        },
+        error : function(jqXHR, textStatus, errorThrown) {
+        	console.log(textStatus);
+        },
+        timeout: 120000,
+    });
+    
+    
+    
+    return "<div id='c" + row.iddsc_procesos + "' > <div class='text-center' style='margin-top:20px;'><i class='fa fa-circle-o-notch fa-spin' style='font-size:34px'></i></div> </div>";
+}
 

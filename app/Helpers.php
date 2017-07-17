@@ -10,7 +10,6 @@ namespace App;
  */
 
 use Auth;
-use DB;
 
 
 /**
@@ -18,17 +17,15 @@ use DB;
  *
  */
 class Helpers {
-               
-    public static function getLeftMenu(){
-    	$iduser = Auth::user()->id;
-    	
-    	
-    	
-    	$menu = \App\MenuModel::all();
-    	
-        return view('layouts.chips.navbar-side',['menu'=>$menu]);
-    }
-    
-    
+	
+	private static $usuario = null;
+	
+	public static function getUsuario(){
+		if(!self::$usuario){
+			self::$usuario= \App\View_UsersPersonasModel::where(['idusers' => Auth::user()->id])->first();
+		}
+		return self::$usuario;
+		
+	}
 
 }

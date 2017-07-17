@@ -1,4 +1,27 @@
 .content-wrapper{
-	background-color: #fff !important;
-	
+	background-color: #fff !important;	
+}
+
+.wrapper-content{
+	background-color: #fff !important;	
+}
+
+.containerspinner{
+    width: 100%;
+    top:0;
+    bottom:0;
+    z-index:99999;
+    position:fixed;
+    background: rgba(0,0,0,0.4);
+	display:none;
+}
+
+.spinnerico{
+	bottom:0;
+	left:0;
+	font-size:30px;
+	margin: auto;
+    padding: 10px;
+    position:fixed;
+    color:#d73925;
 }

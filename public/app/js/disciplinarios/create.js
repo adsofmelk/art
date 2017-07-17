@@ -28,6 +28,7 @@ $('document').ready(function(){
 	 ///obtener datos de la cedula seleccionada en el autocomplete
 	 
 	 function cargarInfoContratacion(id){
+		 $('#spinner').show();
 		 $.getJSON("/detallecontratacion/"+id, function(result){
 			 
 		 
@@ -51,7 +52,7 @@ $('document').ready(function(){
 			 $('#idcampania').val(result.idcampania);
 			 $('#idgrupo').val(result.idgrupo);
 			 
-		 
+			 $('#spinner').hide();
 			 
 		 });
 	 }
@@ -59,6 +60,7 @@ $('document').ready(function(){
 	 
 	 ///SELECCION DE TIPO DE FALTA
 	 $('#dsc_tiposfalta_iddsc_tiposfalta').change(function(){
+		 $('#spinner').show();
 		 $('#btn-save').prop('disabled', true);
 		 $.ajax({
 	         url: "/dsc_tiposfalta/"+$('#dsc_tiposfalta_iddsc_tiposfalta').val(),
@@ -108,11 +110,13 @@ $('document').ready(function(){
 					});
 				 
 				 $('#btn-save').prop('disabled', false);
+				 $('#spinner').hide();
 	
 	         },
 	         error : function(jqXHR, textStatus, errorThrown) {
 	        	 console.log(textStatus);
 	        	 $('#btn-save').prop('disabled', true);
+	        	 $('#spinner').hide();
 	         },
 	
 	         timeout: 120000,
@@ -125,7 +129,7 @@ $('document').ready(function(){
 	 $('#btn-save').click(function(){
 		 
 		 $('#btn-save').prop('disabled', true); // DESHABILITAR BOTON DE ENVIO
-		 $('#spinner_ico').show(); //MOSTRAR SPINNER
+		 $('#spinner').show();
 		 
 		 var formdata = new FormData($('#formulario')[0]); // OBTENER REFERENCIA AL FORMULARIO
 		 
@@ -147,10 +151,11 @@ $('document').ready(function(){
 	        		 $('#content').empty();
 	        		 $('#content').load('/dsc_procesos/' + result.iddsc_procesos);
 	        	 }else{
+	        		 console.log(result);
 	        		 alert(result.detalle);
 	        		 $('#btn-save').prop('disabled', false);
 	        	 }
-	        	 $('#spinner_ico').hide();
+	        	 $('#spinner').hide();
 	         },
 	         error : function(jqXHR, textStatus, errorThrown) {
 	        	 
@@ -159,7 +164,7 @@ $('document').ready(function(){
 	        		    alert(element); 
 	        		});
 	        	 $('#btn-save').prop('disabled', false);
-	        	 $('#spinner_ico').hide();
+	        	 $('#spinner').hide();
 	         },
 	
 	         timeout: 1200000, // VEINTE MINUTOS DE TIMEOUT (20*60*1000)

@@ -5,10 +5,7 @@
 @section('content')
 
     <div class="row">
-        <div class="col-md-5">
-            <h3>Nuevo Usuario</h3>
-        </div>
-        <div class="col-md-7 page-action text-right">
+        <div class="col-md-12 page-action text-right">
             <a href="{{ route('users.index') }}" class="btn btn-default btn-sm"> <i class="fa fa-arrow-left"></i> Regresar</a>
         </div>
     </div>

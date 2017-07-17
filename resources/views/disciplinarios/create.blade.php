@@ -9,7 +9,7 @@
 
 @section('content')
 
-    <div class="row">
+    <div class="row" id='content'>
         
             {!!Form::open(['id' => 'formulario','files' => true])!!}
                 @include('disciplinarios._form')
@@ -17,12 +17,7 @@
                 <div class='col-lg-12'>
 	                <div class='col-lg-3'>
 	                	{!!Form::button("Guardar",["class"=>"btn btn-primary",'id'=>'btn-save', 'disabled'=>'true'])!!}
-	                </div>
-                
-                	<div class='col-lg-2' id='spinner_ico' style='display:none;'>
-                		<i class="fa fa-circle-o-notch fa-spin" style="font-size:24px"></i>
-                	</div>
-                
+	                </div>          
                 </div>
             {!! Form::close() !!}
         

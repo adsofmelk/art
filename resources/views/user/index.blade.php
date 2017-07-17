@@ -4,10 +4,8 @@
 
 @section('content')
     <div class="row">
-        <div class="col-md-5">
-            <h3 class="modal-title">{{ str_plural('Usuarios', $result->count()) }} ({{ $result->total() }}) </h3>
-        </div>
-        <div class="col-md-7 page-action text-right">
+        
+        <div class="col-md-12 page-action text-right">
             @can('add_users')
                 <a href="{{ route('users.create') }}" class="btn btn-primary btn-sm"> <i class="glyphicon glyphicon-plus-sign"></i> Nuevo</a>
             @endcan

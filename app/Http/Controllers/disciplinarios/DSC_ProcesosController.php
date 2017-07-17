@@ -83,9 +83,7 @@ class DSC_ProcesosController extends Controller
     		}
     		
     		$request['solicitaretirotemporal'] = ($request['solicitaretirotemporal'] == 'on')? true : false; 
-    		
-    		$request['aprobadoretirotemporal'] = false;
-    		
+    		    		
     		$request['solicitante_id']= Auth::user()->id;
     		
     		$request['responsable_id'] = $implicado->idpersonas;
@@ -129,10 +127,9 @@ class DSC_ProcesosController extends Controller
     					
     					$file = $request->file('prueba_'.$i);
     					
-    					
-    					
     					$prueba = \App\DSC_PruebasModel::create([
     							'extension' => $file->extension(),
+    							'mime' => $file->getMimeType(),
     							'descripcion' => $file->getClientOriginalName(),
     							'dsc_estadosprueba_iddsc_estadosprueba' => 1,
     							'dsc_procesos_iddsc_procesos' => $proceso->iddsc_procesos,
@@ -173,11 +170,16 @@ class DSC_ProcesosController extends Controller
     {
 
         $proceso = \App\View_DSC_ListadoprocesosModel::where(['iddsc_procesos'=>$id])->first();
+        $fechas = \App\DSC_FechasfaltasModel::where(['dsc_procesos_iddsc_procesos'=>$id])->get();
+        $pruebas = \App\DSC_PruebasModel::where(['dsc_procesos_iddsc_procesos'=>$id])->get();
         return view('disciplinarios.view',[
         		'proceso' => $proceso,
+        		'fechas' => $fechas,
+        		'pruebas' => $pruebas,
         ]);
     }
-
+    
+        
     /**
      * Show the form for editing the specified resource.
      *

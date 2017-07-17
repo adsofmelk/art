@@ -9,24 +9,26 @@ use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class DSC_PruebasModel extends Model implements AuditableContract
+class DSC_GestionprocesoModel extends Model implements AuditableContract
 {
 	use Notifiable, HasRoles, Auditable, SoftDeletes;
 
 	public $incrementing = false; //Necesario para usar id alfanumerico
 	public $timestamps = true; //usa campos timestamp create_at, updated_at, deleted_at
 	protected $dates = ['deleted_at']; //Soft Delete
-	protected $table = 'dsc_pruebas'; //nombre de la tabla
-	protected $primaryKey = 'iddsc_pruebas'; //llave primaria
+	protected $table = 'dsc_gestionproceso'; //nombre de la tabla
+	protected $primaryKey = 'iddsc_gestionproceso'; //llave primaria
 	
 	
     protected $fillable = [
-    		'extension',
-    		'mime',
-    		'descripcion', 
-    		'observacionesevaluacion', 
-    		'dsc_estadosprueba_iddsc_estadosprueba',
+    		'detalleproceso', 
+    		'retirotemporal', 
+    		'dsc_tiposdecisionesevaluacion_iddsc_tiposdecisionesevaluacion',
+    		'dsc_tiposmotivoscierre_iddsc_tiposmotivoscierre',
     		'dsc_procesos_iddsc_procesos',
+    		'gestor_id',
+    		'dsc_tipogestion_iddsc_tipogestion',
+    		'dsc_estadosproceso_iddsc_estadosproceso',
     ];
     
     protected $hidden = [
@@ -39,8 +41,9 @@ class DSC_PruebasModel extends Model implements AuditableContract
     	
     	static::creating(function($table)
     	{
-    		$table->iddsc_pruebas= str_random(36); //crear id ramdom de tipo char
+    		$table->iddsc_gestionproceso= str_random(36); //crear id ramdom de tipo char
     	});
     }
+
 
 }

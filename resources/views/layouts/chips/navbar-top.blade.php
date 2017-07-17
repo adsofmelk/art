@@ -35,7 +35,7 @@
                     <a href="#">
                       <div class="pull-left">
                         <!-- User Image -->
-                        <img src="adminLTE-2.4/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+                        <img src="/adminLTE-2.4/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
                       </div>
                       <!-- Message title and timestamp -->
                       <h4>
@@ -121,15 +121,15 @@
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               
               <!-- hidden-xs hides the username on small devices so only the image appears. -->
-              <span class="hidden-xs">Usuario: {{ Auth::user()->name }}</span>
+              <span class="hidden-xs">{{ \App\Helpers::getUsuario()['nombres'] }} {{ \App\Helpers::getUsuario()['apellidos'] }}</span>
             </a>
             <ul class="dropdown-menu">
               <!-- The user image in the menu -->
               <li class="user-header">
-                <img src="adminLTE-2.4/dist/img/avatar5.png" class="img-circle" alt="User Image">
+                <img src="/adminLTE-2.4/dist/img/avatar5.png" class="img-circle" alt="User Image">
 
                 <p>
-                  Usuario: {{ Auth::user()->name }}
+                  {{ \App\Helpers::getUsuario()['nombres'] }} {{ \App\Helpers::getUsuario()['apellidos'] }}
                   <small>{{ Auth::user()->roles->pluck('name')->first() }}</small>
                 </p>
               </li>
@@ -138,7 +138,7 @@
               <!-- Menu Footer-->
               <li class="user-footer">
                 <div class="pull-left">
-                  <a href="#" class="btn btn-default btn-flat">Cambiar Pasword</a>
+                  <a href="#" class="btn btn-default btn-flat">Configurar	</a>
                 </div>
                 <div class="pull-right">
                   
