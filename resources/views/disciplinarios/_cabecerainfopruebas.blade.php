@@ -1,5 +1,5 @@
 <div class="panel panel-default"><!-- Panel Validacion Pruebas -->
-	  <div class="panel-heading">PRUEBAS ADJUNTADAS AL PROCESO</div>
+	  <div class="panel-heading">PRUEBAS ADJUNTADAS</div>
 	  <div class="panel-body">
 	  	<div class='col-lg-12'>
 			<table class='table table-striped'>

@@ -9,9 +9,10 @@
 
 @section('content')
 
+
 <div class='row'>
 	<div class='col-sm-12'>
-		<table class='table table-striped' data-toggle="table" data-url="/dsc_procesos"  
+		<table class='table table-striped' data-toggle="table" data-url="{!!(isset($archivo))?'/dsc_archivoprocesos':'/dsc_procesos'!!}"  
 			   data-detail-view="true"
 			   data-detail-formatter="detalleRow"
                data-filter-control="true"

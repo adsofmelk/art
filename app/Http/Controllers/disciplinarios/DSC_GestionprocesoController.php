@@ -49,7 +49,7 @@ class DSC_GestionprocesoController extends Controller
     			break;
     		}*/
     		case '2' : {//AMPLIACION DE PRUEBAS
-    			$validar = ['explicaciondesicion' => 'required'];
+    			$validar = ['explicaciondecision' => 'required'];
     			break;
     		}
     		case '3' : {//CIERRE DEL PROCESO
@@ -83,6 +83,19 @@ class DSC_GestionprocesoController extends Controller
     			
     			
     			case '2' : {//AMPLIACION DE PRUEBAS
+    				
+    				$datosproceso = [
+    						'detalleproceso' => $request['explicaciondecision'],
+    						'retirotemporal' => false,
+    						'dsc_tiposdecisionesevaluacion_iddsc_tiposdecisionesevaluacion' => $request['dsc_tiposdecisionesevaluacion_iddsc_tiposdecisionesevaluacion'],
+    						'dsc_tiposmotivoscierre_iddsc_tiposmotivoscierre' => $request['dsc_tiposmotivoscierre_iddsc_tiposmotivoscierre'],
+    						'dsc_procesos_iddsc_procesos' => $request['dsc_procesos_iddsc_procesos'],
+    						'gestor_id' => Auth::user()->id,
+    						'dsc_estadosproceso_iddsc_estadosproceso' => 3, //REQUIERE AMPLIACION
+    						'dsc_tipogestion_iddsc_tipogestion' => 2, //EVALUACION DE PROCESO
+    				];
+    				
+    				$estadoproceso = 3; //PROCESO CERRADO
     				
     				
     				break;
@@ -119,11 +132,21 @@ class DSC_GestionprocesoController extends Controller
     		
     		//Actualizar los estados de las pruebas
     		
-    		for( $i =0 ; $i < sizeof($request['prueba']); $i++){
+    		
+    		
+    		
+    		for( $i = 0 ; $i <  $request['numeropruebas']; $i++){
     			
     			if(isset($request['iddsc_pruebas'][$i])){
+    				
+    				if(isset($request['prueba'][$i])){
+    					$estadoprueba = 2; //PRUEBA APROBADA
+    				}else{
+    					$estadoprueba = 3; // PRUEBA NO APROBADA
+    				}
+    				
     				$prueba = \App\DSC_PruebasModel::find($request['iddsc_pruebas'][$i]);
-    				$prueba->dsc_estadosprueba_iddsc_estadosprueba = ($request['prueba'][$i])?2:3; //2 = APROBADA , 3 = RECHAZADA
+    				$prueba->dsc_estadosprueba_iddsc_estadosprueba = $estadoprueba;
     				$prueba->observacionesevaluacion = $request['obs'][$i];
     				$prueba->save();
     				

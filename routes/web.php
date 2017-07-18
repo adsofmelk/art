@@ -29,10 +29,11 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::group( ['middleware' => ['auth']], function() {
 	
 	//DSC
-	
+	Route::get('archivodisciplinarios','disciplinarios\DSC_DisciplinariosController@indexArchivo');
 	Route::resource('disciplinarios', 'disciplinarios\DSC_DisciplinariosController');
 	Route::resource('dsc_tiposfalta', 'disciplinarios\DSC_TiposfaltaController');
 	Route::resource('dsc_procesos', 'disciplinarios\DSC_ProcesosController');
+	Route::resource('dsc_archivoprocesos', 'disciplinarios\DSC_ArchivoprocesosController');
 	Route::resource('dsc_evaluacionprocesos', 'disciplinarios\DSC_GestionprocesoController');
 	Route::resource('ampliacionproceso', 'disciplinarios\DSC_AmpliacionController');
 	

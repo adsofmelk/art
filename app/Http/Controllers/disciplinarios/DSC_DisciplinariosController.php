@@ -9,6 +9,8 @@ use App\Http\Controllers\Controller;
 
 class DSC_DisciplinariosController extends Controller
 {
+    
+
     /**
      * Display a listing of the resource.
      *
@@ -18,6 +20,17 @@ class DSC_DisciplinariosController extends Controller
     {
         return view('disciplinarios.index');
     }
+    
+    /**
+     * Muestra procesos archivados
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function indexArchivo()
+    {
+    	return view('disciplinarios.index',['archivo'=>true]);
+    }
+    
 
     /**
      * Show the form for creating a new resource.
@@ -67,8 +80,16 @@ class DSC_DisciplinariosController extends Controller
     public function edit($id) //EVALUACION DEL PROCESO
     {
     	$proceso = \App\View_DSC_ListadoprocesosModel::where(['iddsc_procesos'=>$id])->first();
+    	
+    	if(($proceso->dsc_estadosproceso_iddsc_estadosproceso != 1)&&($proceso->dsc_estadosproceso_iddsc_estadosproceso != 4)){
+    		return redirect('disciplinarios');
+    	}
+    	
     	$fechas = \App\DSC_FechasfaltasModel::where(['dsc_procesos_iddsc_procesos' => $id ])->get();
-    	$pruebas = \App\DSC_PruebasModel::where(['dsc_procesos_iddsc_procesos' => $id ])->get();
+    	
+    	$pruebas = \App\DSC_PruebasModel::join('dsc_estadosprueba','iddsc_estadosprueba','=','dsc_estadosprueba_iddsc_estadosprueba')
+    	->where(['dsc_procesos_iddsc_procesos' => $id ])->get();
+    	
     	$referenciafalta = \App\DSC_TiposfaltaModel::find($proceso->iddsc_tiposfalta);
     	$tiposdecisionesevaluacion = \App\DSC_TiposdecisionesevaluacionModel::pluck('nombre','iddsc_tiposdecisionesevaluacion');
     	$tiposmotivoscierre = \App\DSC_TiposmotivoscierreModel::pluck('nombre','iddsc_tiposmotivoscierre');

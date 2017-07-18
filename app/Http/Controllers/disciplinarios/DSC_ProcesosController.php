@@ -19,7 +19,8 @@ class DSC_ProcesosController extends Controller
      */
     public function index()
     {
-    	return response()->json(\App\View_DSC_ListadoprocesosModel::all()->toArray());
+    	return response()->json(\App\View_DSC_ListadoprocesosModel::where('dsc_estadosproceso_iddsc_estadosproceso','!=' , 2)
+    			->get()->toArray());
     }
 
     /**
@@ -127,9 +128,12 @@ class DSC_ProcesosController extends Controller
     					
     					$file = $request->file('prueba_'.$i);
     					
+    					$mime = ($file->getMimeType() != null)? $file->getMimeType() : '';
+    					$extension = ($file->extension() != null)? $file->extension() : '';
+    					
     					$prueba = \App\DSC_PruebasModel::create([
-    							'extension' => $file->extension(),
-    							'mime' => $file->getMimeType(),
+    							'extension' => $extension,
+    							'mime' => $mime,
     							'descripcion' => $file->getClientOriginalName(),
     							'dsc_estadosprueba_iddsc_estadosprueba' => 1,
     							'dsc_procesos_iddsc_procesos' => $proceso->iddsc_procesos,
@@ -171,11 +175,18 @@ class DSC_ProcesosController extends Controller
 
         $proceso = \App\View_DSC_ListadoprocesosModel::where(['iddsc_procesos'=>$id])->first();
         $fechas = \App\DSC_FechasfaltasModel::where(['dsc_procesos_iddsc_procesos'=>$id])->get();
-        $pruebas = \App\DSC_PruebasModel::where(['dsc_procesos_iddsc_procesos'=>$id])->get();
+        $pruebas = \App\DSC_PruebasModel::join('dsc_estadosprueba','iddsc_estadosprueba','=','dsc_estadosprueba_iddsc_estadosprueba')
+        ->where(['dsc_procesos_iddsc_procesos' => $id ])->get();
+        $gestiones = \App\DSC_GestionprocesoModel::join('dsc_tiposdecisionesevaluacion','iddsc_tiposdecisionesevaluacion','=','dsc_tiposdecisionesevaluacion_iddsc_tiposdecisionesevaluacion')
+        ->where(['dsc_procesos_iddsc_procesos' => $id ])
+        ->orderby('created_at', 'DESC')
+        ->get();
+        
         return view('disciplinarios.view',[
         		'proceso' => $proceso,
         		'fechas' => $fechas,
         		'pruebas' => $pruebas,
+        		'gestiones' => $gestiones,
         ]);
     }
     

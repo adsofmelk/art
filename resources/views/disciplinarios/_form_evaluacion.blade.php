@@ -19,26 +19,42 @@
 			<?php $i=0;?>
 			@foreach($pruebas as $prueba)
 				<tr>
-					<td>
-						<a href="/dsc_file/{{$prueba['iddsc_pruebas']}}" target="_blank">{{$prueba['descripcion']}}</a>
-						{!!Form::hidden('iddsc_pruebas['.$i.']',$prueba['iddsc_pruebas'])!!}
-					</td>
-					<td>
-						<input type="checkbox" class='form-control prueba' 
-							checked data-size="small" 
-							value = "true" data-value="true"
-							data-on-color="success" data-off-color="danger" 
-							data-on-text="Si" data-off-text="No"  
-							name="prueba[{{$i}}]" id="prueba{{$i}}" >
-					</td>
-					<td style='min-width:500px;'>{{Form::text('obs['.$i.']',null,['id' => 'obs'.$i , 'class'=>'form-control', 
-							'style'=>'display:none;', 'placeholder'=>'Ingrese el argumento de por que no es valida esta prueba'])}}
-					</td>
-					
+					@if($prueba['dsc_estadosprueba_iddsc_estadosprueba'] == 1)
+						<td>
+							<a href="/dsc_file/{{$prueba['iddsc_pruebas']}}" target="_blank">{{$prueba['descripcion']}}</a>
+							{!!Form::hidden('iddsc_pruebas['.$i.']',$prueba['iddsc_pruebas'])!!}
+						</td>
+						<td>
+							<input type="checkbox" class='form-control prueba' 
+								checked data-size="small" 
+								value = "true" data-value="true"
+								data-on-color="success" data-off-color="danger" 
+								data-on-text="Si" data-off-text="No"  
+								name="prueba[{{$i}}]" id="prueba{{$i}}" >
+						</td>
+						<td style='min-width:500px;'>{{Form::text('obs['.$i.']',null,['id' => 'obs'.$i , 'class'=>'form-control', 
+								'style'=>'display:none;', 'placeholder'=>'Ingrese el argumento de por que no es valida esta prueba'])}}
+						</td>
+						<?php $i++;?>
+					@else
+						<td>
+							<a href="/dsc_file/{{$prueba['iddsc_pruebas']}}" target="_blank">{{$prueba['descripcion']}}</a>
+						</td>
+						<td>
+							{{$prueba['nombre']}}
+						</td>
+						<td style='min-width:500px;'>
+							{{$prueba['observacionesevaluacion']}}
+						</td>
+					@endif
 				</tr>
-				<?php $i++;?>
+				
 			@endforeach
+			
 			</table>
+			
+			{{Form::hidden('numeropruebas',$i)}}
+			
 		</div>
 	  	<div class='col-lg-8'>
 			<div class="panel panel-default">

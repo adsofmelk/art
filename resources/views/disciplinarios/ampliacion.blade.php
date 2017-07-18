@@ -12,7 +12,7 @@
                 <div class="ibox float-e-margins">
                     <div class="ibox-content">
                     	<div class='row'  style='background-color: #fff;'>
-                        {!! Form::open(['id' => 'formulario','files' => true]) !!}
+                        {!! Form::open(['id' => 'formulario','files' => true ]) !!}
                             @include('disciplinarios._form_ampliacion')
 			                <!-- Submit Form Button -->
 			                <div class='col-lg-12'>

@@ -1,5 +1,9 @@
 $('document').ready(function(){
 	
+	$("#formulario").submit(function(e){
+        e.preventDefault();
+    });
+	
 	//desactivar boton de guardado
 	$('#btn-save').prop('disabled', true);
 	
@@ -76,9 +80,12 @@ $('document').ready(function(){
 	///GUARDAR GESTION
 	 $('#btn-save').click(function(){
 		 
+		 
+		 
 		 $('#btn-save').prop('disabled', true); // DESHABILITAR BOTON DE ENVIO
 		 $('#spinner').show();
 		 
+		 var validarpruebas = true;
 		 
 		 $('.prueba').each(function(index){
 			 
@@ -89,13 +96,23 @@ $('document').ready(function(){
 				 console.log("Prueba no valida .. confirmando campo de observaciones")
 				 if(!$.trim($('#obs'+index).val()).length){
 					 console.log("Observacion" + index + " vacia");
-					 alert('Las pruebas que no han sido aceptadas deben tener el por que.')
-					 return;
+					 
+					 validarpruebas = false;
+					 
 				 }else{
 					 console.log('Observaciones ' + index + ' presentes' )
 				 }
 			 }
 		 });
+		 
+		 if(!validarpruebas){
+			 
+			 alert('Debe indicar el motivo de no aceptación de cada prueba');
+			 $('#btn-save').prop('disabled', false); // DESHABILITAR BOTON DE ENVIO
+			 $('#spinner').hide();
+			 
+			 return false;
+		 }
 		 
 		 var formdata = new FormData($('#formulario')[0]); // OBTENER REFERENCIA AL FORMULARIO
 		 

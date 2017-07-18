@@ -8,8 +8,12 @@
         <div class='col-lg-2'><strong>Creado:</strong>&nbsp;&nbsp;{{$proceso->fechacreacion}}</div>
         
         <div class='col-lg-4 text-right'>
-        	<a href='/disciplinarios/{{$proceso->iddsc_procesos}}/edit' class='btn btn-primary'><i class="fa fa-eye" aria-hidden="true"></i>&nbsp;Evaluar</a>
-        	<a href='/ampliacionproceso/{{$proceso->iddsc_procesos}}/edit' class='btn btn-primary'><i class="fa fa-reply-all" aria-hidden="true"></i>&nbsp;Ampliar</a>
+			@if(($proceso->dsc_estadosproceso_iddsc_estadosproceso == 1)||($proceso->dsc_estadosproceso_iddsc_estadosproceso == 4))        
+        	  <a href='/disciplinarios/{{$proceso->iddsc_procesos}}/edit' class='btn btn-primary'><i class="fa fa-eye" aria-hidden="true"></i>&nbsp;Evaluar</a>
+        	@endif
+        	@if($proceso->dsc_estadosproceso_iddsc_estadosproceso == 3)
+        	  <a href='/ampliacionproceso/{{$proceso->iddsc_procesos}}/edit' class='btn btn-primary'><i class="fa fa-reply-all" aria-hidden="true"></i>&nbsp;Ampliar</a>
+        	@endif
         </div>
 </div>
 <div class='row' style='margin:0 10px 10px 10px; border: 1px solid #eee; padding: 8px;'>
@@ -37,44 +41,25 @@
 	
 	
 	<div class='col-lg-6' style='margin-top:20px;'>
-		<div class='col-lg-12 text-center' style='margin-top: 10px;'>
-	  			<strong>Fecha(s) de la falta</strong>
-	  			<div class=''>
-	  			@foreach($fechas as $fecha)
-	  				[ {{$fecha['fecha']}} ]&nbsp;&nbsp;&nbsp;
-		  		@endforeach
-		  		</div>
-	    </div>
-	    <div class='col-lg-12 text-center' style='margin-top: 10px;'>
-			<strong>Hechos:</strong>
-			<div class='panel panel-default' style='padding:20px;'>{{$proceso->hechos}}
-			</div>
+		<strong>Hechos:</strong>
+		<div class='panel panel-default' style='padding:20px;'>{{$proceso->hechos}}
 		</div>
+			    
 	</div>
 		
 	<div class='col-lg-6' style='margin-top:20px;'>
-			
-		<table class='table table-striped'>
-			<thead>
-				<tr>
-					<th>Pruebas</th>
-					<th>Estado</th>
-					<th>Observaciones</th>
-				</tr>
-			</thead>
-			<tbody>
-			@foreach($pruebas as $prueba)
-				<tr>
-					<td><a href="/dsc_file/{{$prueba['iddsc_pruebas']}}" target="_blank">{{$prueba['descripcion']}}</a></td>
-					<td></td>
-					<td></td>
-				</tr>
-			@endforeach
-			</tbody>
-			</table>
+		<strong>Fecha(s) de la falta</strong>
+  		<div class=''>
+  		@foreach($fechas as $fecha)
+  			[ {{$fecha['fecha']}} ]&nbsp;&nbsp;&nbsp;
+	  	@endforeach
+	  	</div>	
+		
 	</div>
-	
-	
-	
+</div>
+
+<div class=''row>
+	@include('disciplinarios._cabecerainfopruebas')
+	@include('disciplinarios._cabecerainfogestiones')
 </div>
 

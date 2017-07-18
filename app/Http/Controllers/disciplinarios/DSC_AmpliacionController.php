@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\disciplinarios;
 
 use Illuminate\Http\Request;
-use Auth;
 use App\Http\Controllers\Controller;
+use DB;
 
 
 class DSC_AmpliacionController extends Controller
@@ -37,39 +37,78 @@ class DSC_AmpliacionController extends Controller
      */
     public function store(Request $request)
     {
-        return response()->json($request->toArray());
         
+    	    	
         //AGREGAR LOS ARCHIVOS ADJUNTOS
+        
+        if( !$request['numeropruebas'] >0 ){
+        	return response()->json([
+        			'estado' => false,
+        			'detalle' => "No ha adjuntado ninguna prueba",
+        	]);
+        }
         
         //verificar numero de archivos
         for($i = 0; $i < $request['numeropruebas']; $i++){
         	if(!$request->hasFile('prueba_'.$i)){
         		return response()->json([
         				'estado' => false,
-        				'detalle' => "Debe adjuntar todas las pruebas solicitadas",
+        				'detalle' => "no se encuentra la prueba o excede el tamaño máximimo permitido" . $i,
         		]);
         	}
         }
         
-        for($i = 0; $i < $request['numeropruebas']; $i++){
+        try{
         	
+        	DB::beginTransaction();
         	
-        	$file = $request->file('prueba_'.$i);
+        	$proceso = \App\DSC_ProcesosModel::find($request['dsc_procesos_iddsc_procesos']);
+        
+	        for($i = 0; $i < $request['numeropruebas']; $i++){
+	        	
+	        	
+	        	$file = $request->file('prueba_'.$i);
+	        	
+	        	$mime = ($file->getMimeType() != null)? $file->getMimeType() : "";
+	        	$extension = ($file->extension() != null)? $file->extension() : '';
+	        	
+	        	$prueba = \App\DSC_PruebasModel::create([
+	        			'extension' => $extension,
+	        			'mime' => $mime,
+	        			'descripcion' => $file->getClientOriginalName(),
+	        			'dsc_estadosprueba_iddsc_estadosprueba' => 1,
+	        			'dsc_procesos_iddsc_procesos' => $proceso->iddsc_procesos,
+	        	]);
+	        	if($prueba){
+	        		\Storage::disk('local')->put('dsc/'.$prueba->iddsc_pruebas,\File::get($file));
+	        	}
+	        	
+	        }//end for
+	        // FIN AGREGAR ARCHIVOS ADJUNTOS
+	        
+	        $proceso->dsc_estadosproceso_iddsc_estadosproceso = 4;
+	        
+	        $proceso->save();
+	        
+	      DB::commit();
+	      
+	      
+        }catch (Exception $e){
         	
-        	$prueba = \App\DSC_PruebasModel::create([
-        			'extension' => $file->extension(),
-        			'mime' => $file->getMimeType(),
-        			'descripcion' => $file->getClientOriginalName(),
-        			'dsc_estadosprueba_iddsc_estadosprueba' => 1,
-        			'dsc_procesos_iddsc_procesos' => $proceso->iddsc_procesos,
+        	DB::rollBack();
+        	
+        	return response()->json([
+        			'estado' => false,
+        			'detalle' => "No pudo completarse la accion",
         	]);
-        	if($prueba){
-        		\Storage::disk('local')->put('dsc/'.$prueba->iddsc_pruebas,\File::get($file));
-        	}
-        	
         }
         
-        // FIN AGREGAR ARCHIVOS ADJUNTOS
+        return response()->json([
+        		'estado' => true,
+        		'iddsc_procesos' => $proceso->iddsc_procesos,
+        ]);
+        
+       
     }
 
     /**
@@ -92,6 +131,11 @@ class DSC_AmpliacionController extends Controller
     public function edit($id) //AMPLIACION DEL PROCESO
     {
     	$proceso = \App\View_DSC_ListadoprocesosModel::where(['iddsc_procesos'=>$id])->first();
+    	
+    	if($proceso->dsc_estadosproceso_iddsc_estadosproceso != 3){
+    		return redirect('disciplinarios');
+    	}
+    	
     	$fechas = \App\DSC_FechasfaltasModel::where(['dsc_procesos_iddsc_procesos' => $id ])->get();
     	$pruebas = \App\DSC_PruebasModel::join('dsc_estadosprueba','iddsc_estadosprueba','=','dsc_estadosprueba_iddsc_estadosprueba')
     			->where(['dsc_procesos_iddsc_procesos' => $id ])->get();
