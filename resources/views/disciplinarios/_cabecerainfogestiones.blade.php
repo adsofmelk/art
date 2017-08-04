@@ -10,6 +10,7 @@
 					<th>Reporte de evaluación</th>
 					<th>Retiro de operación</th>
 					<th>Decisión</th>
+					<th>Cierre</th>
 				</tr>
 			</thead>
 			<?php $ultimo = true; ?>
@@ -42,7 +43,15 @@
 					<td  class='{{$class . " " . $desicionclass}}'>
 						{{$gestion['nombre']}}
 					</td>
-					
+					<td  class='{{$class . " " . $desicionclass}}'>
+						<?php 
+						if($gestion['dsc_tiposmotivoscierre_iddsc_tiposmotivoscierre']!=null){
+							$motivocierre = \App\DSC_TiposmotivoscierreModel::find($gestion['dsc_tiposmotivoscierre_iddsc_tiposmotivoscierre']);
+							echo $motivocierre->nombre;
+						}
+						
+						?>
+					</td>
 				</tr>
 				
 			@endforeach

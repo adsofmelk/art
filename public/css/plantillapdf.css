@@ -1,0 +1,4 @@
+@page { margin: 100px 100px; }
+#header { position: fixed; left: 0px; top: -100px; right: 0px; height: 80px;  text-align: left;  }
+#footer { position: fixed; left: 0px; bottom: -100px; right: 0px; height: 80px; text-align: right; border-top:1px solid #ccc;  }
+#footer .page:after { content: counter(page); }

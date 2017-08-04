@@ -68,7 +68,28 @@
   
 </head>
 
-<body class="hold-transition skin-red sidebar-mini"> <!--    sidebar-collapse  -->
+<body class="hold-transition skin-red sidebar-mini sidebar-collapse"> <!--      -->
+	
+	<div id="myModal" class="modal fade" role="dialog">
+	  <div class="modal-dialog">
+	
+	    <!-- Modal content-->
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal">&times;</button>
+	        <h4 class="modal-title" id='modalHeader'></h4>
+	      </div>
+	      <div class="modal-body" id='modalBody'>
+	        
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+	      </div>
+	    </div>
+	
+	  </div>
+	</div>
+	
 	<div id='spinner' class='containerspinner'>
 		 <div  class='spinnerico'>
 		 	<i class='fa fa-circle-o-notch fa-spin'></i>
@@ -94,6 +115,9 @@
 <!-- AdminLTE App -->
 {!!Html::script("/adminLTE-2.4/dist/js/adminlte.min.js")!!}
 
+
+<!-- Clock -->
+{!!Html::script("/js/clock.js")!!}
      @yield('scripts')
 
      

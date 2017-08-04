@@ -5,6 +5,7 @@ namespace App\Http\Controllers\disciplinarios;
 use Illuminate\Http\Request;
 use Auth;
 use App\Http\Controllers\Controller;
+use DB;
 
 
 class DSC_DisciplinariosController extends Controller
@@ -68,7 +69,7 @@ class DSC_DisciplinariosController extends Controller
      */
     public function show($id)
     {
-        //
+    	return app('\App\Http\Controllers\disciplinarios\DSC_ProcesosController')->show($id);
     }
 
     /**
@@ -91,8 +92,17 @@ class DSC_DisciplinariosController extends Controller
     	->where(['dsc_procesos_iddsc_procesos' => $id ])->get();
     	
     	$referenciafalta = \App\DSC_TiposfaltaModel::find($proceso->iddsc_tiposfalta);
-    	$tiposdecisionesevaluacion = \App\DSC_TiposdecisionesevaluacionModel::pluck('nombre','iddsc_tiposdecisionesevaluacion');
-    	$tiposmotivoscierre = \App\DSC_TiposmotivoscierreModel::pluck('nombre','iddsc_tiposmotivoscierre');
+    	
+    	$tiposdecisionesevaluacion = \App\DSC_TiposdecisionesevaluacionModel::where('iddsc_tiposdecisionesevaluacion','<',4)
+		    	->pluck('nombre','iddsc_tiposdecisionesevaluacion');
+    	
+    	$tiposmotivoscierre = \App\DSC_TiposmotivoscierreModel::where('iddsc_tiposmotivoscierre','!=',5)->pluck('nombre','iddsc_tiposmotivoscierre');
+    	
+    	$sedes = \App\SedesModel::orderby('nombre','asc')->pluck('nombre','idsedes');
+    	
+    	$analista = \App\View_UsersPersonasModel::select(DB::raw('concat(nombres," ",apellidos) as nombre, idpersonas'))
+    	->pluck('nombre','idpersonas');
+    	
     	return view('disciplinarios.evaluacion',[
     			'proceso' => $proceso,
     			'fechas' => $fechas,
@@ -100,7 +110,8 @@ class DSC_DisciplinariosController extends Controller
     			'referenciafalta' => $referenciafalta,
     			'tiposdecisionesevaluacion' => $tiposdecisionesevaluacion,
     			'tiposmotivoscierre' => $tiposmotivoscierre,
-    			
+    			'sedes' => $sedes,
+    			'analistas' => $analista,
     	]);
     }
 

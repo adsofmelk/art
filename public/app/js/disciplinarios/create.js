@@ -148,21 +148,31 @@ $('document').ready(function(){
 	         success : function(result) {
 	        	 if(result.estado == true){
 	        		 console.log('Proceso guardado');
+	        		 $('#modalHeader').html("Creación de proceso");
+	        		 $('#modalBody').html("El proceso ha sido guardado");
+	        		 $('#myModal').modal('toggle');
 	        		 $('#content').empty();
 	        		 $('#content').load('/dsc_procesos/' + result.iddsc_procesos);
 	        	 }else{
 	        		 console.log(result);
-	        		 alert(result.detalle);
+	        		 $('#modalHeader').html("Error");
+	        		 $('#modalBody').html(result.detalle);
+	        		 $('#myModal').modal('toggle');
 	        		 $('#btn-save').prop('disabled', false);
 	        	 }
 	        	 $('#spinner').hide();
 	         },
 	         error : function(jqXHR, textStatus, errorThrown) {
 	        	 
-	        	 
+	        	 var errores ='';
 	        	 $.each(jqXHR.responseJSON, function(index, element) {
-	        		    alert(element); 
+	        		    errores = errores + " | " + element; 
 	        		});
+	        	 
+	        	 $('#modalHeader').html("Error");
+        		 $('#modalBody').html(errores);
+        		 $('#myModal').modal('toggle');
+	        	 
 	        	 $('#btn-save').prop('disabled', false);
 	        	 $('#spinner').hide();
 	         },

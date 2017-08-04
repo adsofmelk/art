@@ -1,8 +1,8 @@
 <footer class="main-footer">
     <!-- To the right -->
-    <div class="pull-right hidden-xs">
-      Slogan del pié de página
+    <div id='clock' class="pull-right hidden-xs">
+      
     </div>
     <!-- Default to the left -->
-    <strong>MBR &copy; {{date('Y')}} <a href="">Articulación</a>.</strong> Todos los derechos reservados.
+    <strong><img src='/images/logoarticulacion.png' style='width:100px;'/> 	
 </footer>

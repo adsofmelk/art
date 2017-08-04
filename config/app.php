@@ -185,6 +185,9 @@ return [
     		
     	//DATA TABLES
     	Yajra\Datatables\DatatablesServiceProvider::class,
+    		
+    	//DOMPDF
+    	Barryvdh\DomPDF\ServiceProvider::class,
 
     ],
 
@@ -239,6 +242,9 @@ return [
     	
     	//DATA TABLES
     	'Datatables' => Yajra\Datatables\Facades\Datatables::class,
+    		
+    	//DOMPDF
+    	'PDF' => Barryvdh\DomPDF\Facade::class,
 
     ],
 

@@ -1,5 +1,5 @@
   <div class="content-wrapper">
-  
+  @include('flash::message')
     
 	<!--  Menu module  -->
 	<section class="content-header">

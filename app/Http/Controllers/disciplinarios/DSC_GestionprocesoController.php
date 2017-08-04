@@ -44,10 +44,18 @@ class DSC_GestionprocesoController extends Controller
     	
     	$validar = null;
     	switch($request['dsc_tiposdecisionesevaluacion_iddsc_tiposdecisionesevaluacion']){
-    		/*case '1' : { //CITACION A DESCARGOS
-    			
+    		case '1' : { //CITACION A DESCARGOS
+    			$validar = [
+    					'fechadescargos' => 'required',
+    					'horadescargos' => 'required',
+    					'minutodescargos' => 'required',
+    					'jornadadescargos' => 'required',
+    					'sedes_idsedes' => 'required',
+    					'analista_idpersonas' => 'required',
+    					'explicaciondecision' => 'required',
+    			];	
     			break;
-    		}*/
+    		}
     		case '2' : {//AMPLIACION DE PRUEBAS
     			$validar = ['explicaciondecision' => 'required'];
     			break;
@@ -68,21 +76,43 @@ class DSC_GestionprocesoController extends Controller
     	}
     	
     	$this->validate($request, $validar);
+    	
     		
     	try{
     		
     		DB::beginTransaction();
 			
     		$estadoproceso = null;
+    		 		
+    		
+    		
     		
     		switch($request['dsc_tiposdecisionesevaluacion_iddsc_tiposdecisionesevaluacion']){
-    			/*case '1' : { //CITACION A DESCARGOS
-    			
-    			break;
-    			}*/
+    			case '1' : { //CITACION A DESCARGOS
+    				
+    				$estadoproceso = 5;  //DESCARGOS
+    				$tipogestion = 3; //CITACION A DESCARGOS
+    				
+    				$datosproceso = [
+    						'detalleproceso' => $request['explicaciondecision'],
+    						'retirotemporal' => (isset($request['aprobadoretirotemporal']))?true:false,
+    						'dsc_tiposdecisionesevaluacion_iddsc_tiposdecisionesevaluacion' => $request['dsc_tiposdecisionesevaluacion_iddsc_tiposdecisionesevaluacion'],
+    						'dsc_tiposmotivoscierre_iddsc_tiposmotivoscierre' => $request['dsc_tiposmotivoscierre_iddsc_tiposmotivoscierre'],
+    						'dsc_procesos_iddsc_procesos' => $request['dsc_procesos_iddsc_procesos'],
+    						'gestor_id' => Auth::user()->id,
+    						'dsc_estadosproceso_iddsc_estadosproceso' => $estadoproceso,
+    						'dsc_tipogestion_iddsc_tipogestion' => $tipogestion,
+    				];
+    				
+    				
+    				break;
+    			}
     			
     			
     			case '2' : {//AMPLIACION DE PRUEBAS
+    				
+    				$estadoproceso = 3;  //REQUIERE AMPLIACION
+    				$tipogestion = 2; //EVALUACION DE PROCESO
     				
     				$datosproceso = [
     						'detalleproceso' => $request['explicaciondecision'],
@@ -91,17 +121,19 @@ class DSC_GestionprocesoController extends Controller
     						'dsc_tiposmotivoscierre_iddsc_tiposmotivoscierre' => $request['dsc_tiposmotivoscierre_iddsc_tiposmotivoscierre'],
     						'dsc_procesos_iddsc_procesos' => $request['dsc_procesos_iddsc_procesos'],
     						'gestor_id' => Auth::user()->id,
-    						'dsc_estadosproceso_iddsc_estadosproceso' => 3, //REQUIERE AMPLIACION
-    						'dsc_tipogestion_iddsc_tipogestion' => 2, //EVALUACION DE PROCESO
+    						'dsc_estadosproceso_iddsc_estadosproceso' => $estadoproceso, //REQUIERE AMPLIACION
+    						'dsc_tipogestion_iddsc_tipogestion' => $tipogestion, //EVALUACION DE PROCESO
     				];
     				
-    				$estadoproceso = 3; //PROCESO CERRADO
     				
     				
     				break;
     			}
     			case '3' : {//CIERRE DEL PROCESO
     				
+    				$estadoproceso = 2; //PROCESO CERRADO
+    				$tipogestion = 1; //GESTION DE CIERRE DE PROCESO
+    				
     				$datosproceso = [
     						'detalleproceso' => $request['explicaciondecision'],
     						'retirotemporal' => false,
@@ -109,16 +141,16 @@ class DSC_GestionprocesoController extends Controller
     						'dsc_tiposmotivoscierre_iddsc_tiposmotivoscierre' => $request['dsc_tiposmotivoscierre_iddsc_tiposmotivoscierre'],
     						'dsc_procesos_iddsc_procesos' => $request['dsc_procesos_iddsc_procesos'],
     						'gestor_id' => Auth::user()->id,
-    						'dsc_estadosproceso_iddsc_estadosproceso' => 2, //PROCESO CERRADO
-    						'dsc_tipogestion_iddsc_tipogestion' => 1, //GESTION DE CIERRE DE PROCESO
+    						'dsc_estadosproceso_iddsc_estadosproceso' => $estadoproceso, //REQUIERE AMPLIACION
+    						'dsc_tipogestion_iddsc_tipogestion' => $tipogestion, //EVALUACION DE PROCESO
     				];
     				
-    				$estadoproceso = 2; //PROCESO CERRADO
     				
     				break;
     			}
     			
     		}
+    		
     		
     		
     		
@@ -128,12 +160,13 @@ class DSC_GestionprocesoController extends Controller
     		
     		$proceso->dsc_estadosproceso_iddsc_estadosproceso = $estadoproceso; //actualizar el estado del proceso
     		
+    		$proceso->retirotemporal = $gestionproceso->retirotemporal;
+    		
     		$proceso->save();
     		
-    		//Actualizar los estados de las pruebas
     		
     		
-    		
+    		//Actualizar los estados de las pruebas (se usa en los 3 casos)
     		
     		for( $i = 0 ; $i <  $request['numeropruebas']; $i++){
     			
@@ -151,6 +184,42 @@ class DSC_GestionprocesoController extends Controller
     				$prueba->save();
     				
     			}
+    			
+    		}
+    		
+    		
+    		
+    		//PROGRAMAR CITACION A DESCARGOS
+    		if($request['dsc_tiposdecisionesevaluacion_iddsc_tiposdecisionesevaluacion']==1){
+    			
+    			if(isset($request['jornadadescargos'])){
+    				$request['horadescargos'] = (($request['horadescargos'] + 12)<24)? $request['horadescargos'] + 12: 00;
+    			}
+    			$fechaprogramada= $request['fechadescargos'] . " " . $request['horadescargos'].":". $request['minutodescargos'];
+    			
+    			
+    			
+    			
+    			$descargos = \App\DSC_DescargosModel::create([
+    					'fechaprogramada'=> $fechaprogramada,
+    					'useranalista_id'=> $request['analista_idpersonas'],
+    					'sedes_idsedes' => $request['sedes_idsedes'],
+    					'dsc_estadosproceso_iddsc_estadosproceso' => $estadoproceso,
+    					'dsc_tipogestion_iddsc_tipogestion' => $tipogestion,
+    			]);
+    			
+    			
+    			if($descargos){
+    				
+    				\App\DSC_ProcesosHasDescargosModel::create([
+    						'estado'=>true,
+    						'dsc_procesos_iddsc_procesos'=> $request['dsc_procesos_iddsc_procesos'],
+    						'dsc_descargos_iddsc_descargos' => $descargos->iddsc_descargos,
+    				]);
+    				
+    			}
+    			
+    			// /. PROGRAMAR CITACION A DESCARGOS
     			
     		}
     		

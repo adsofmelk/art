@@ -83,7 +83,7 @@ class DSC_ProcesosController extends Controller
     			]);
     		}
     		
-    		$request['solicitaretirotemporal'] = ($request['solicitaretirotemporal'] == 'on')? true : false; 
+    		$request['solicitaretirotemporal'] = (isset($request['solicitaretirotemporal']))? true : false; 
     		    		
     		$request['solicitante_id']= Auth::user()->id;
     		
@@ -182,11 +182,16 @@ class DSC_ProcesosController extends Controller
         ->orderby('created_at', 'DESC')
         ->get();
         
+        $descargos = \App\View_DSC_ProcesohasdescargosModel::where([
+        		'dsc_procesos_iddsc_procesos' => $id,
+        ])->get();
+        
         return view('disciplinarios.view',[
         		'proceso' => $proceso,
         		'fechas' => $fechas,
         		'pruebas' => $pruebas,
         		'gestiones' => $gestiones,
+        		'descargos' => $descargos,
         ]);
     }
     

@@ -107,7 +107,10 @@ $('document').ready(function(){
 		 
 		 if(!validarpruebas){
 			 
-			 alert('Debe indicar el motivo de no aceptación de cada prueba');
+			 $('#modalHeader').html("Error");
+    		 $('#modalBody').html("Debe indicar el motivo de no aceptación de cada prueba");
+    		 $('#myModal').modal('toggle');
+			 
 			 $('#btn-save').prop('disabled', false); // DESHABILITAR BOTON DE ENVIO
 			 $('#spinner').hide();
 			 
@@ -131,21 +134,33 @@ $('document').ready(function(){
 	         success : function(result) {
 	        	 if(result.estado == true){
 	        		 console.log('Gestion guardada');
+	        		 
+	        		 $('#modalHeader').html("Registro de gestión");
+	        		 $('#modalBody').html("La evaluación ha sido generada");
+	        		 $('#myModal').modal('toggle');
+	        		 
 	        		 $('#content').empty();
 	        		 $('#content').load('/dsc_procesos/' + result.iddsc_procesos);
 	        	 }else{
 	        		 console.log(result);
-	        		 alert(result.detalle);
+	        		 $('#modalHeader').html("Error");
+	        		 $('#modalBody').html(result.detalle);
+	        		 $('#myModal').modal('toggle');
+	        		 
 	        		 $('#btn-save').prop('disabled', false);
 	        	 }
 	        	 $('#spinner').hide();
 	         },
 	         error : function(jqXHR, textStatus, errorThrown) {
 	        	 
-	        	 
+	        	 var errores = '';
 	        	 $.each(jqXHR.responseJSON, function(index, element) {
-	        		    alert(element); 
+	        		    errores = errores + ' | ' + element; 
 	        		});
+	        	 $('#modalHeader').html("Error");
+	    		 $('#modalBody').html(errores);
+	    		 $('#myModal').modal('toggle');
+	    		 
 	        	 $('#btn-save').prop('disabled', false);
 	        	 $('#spinner').hide();
 	         },

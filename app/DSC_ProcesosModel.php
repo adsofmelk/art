@@ -24,6 +24,7 @@ class DSC_ProcesosModel extends Model implements AuditableContract
     		'fechaconocimiento', 
     		'hechos', 
     		'solicitaretirotemporal', 
+    		'retirotemporal',
     		'solicitante_id',
     		'responsable_id',
     		'dsc_tiposfalta_iddsc_tiposfalta',

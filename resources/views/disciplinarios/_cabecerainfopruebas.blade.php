@@ -45,7 +45,7 @@
 						{{$prueba['created_at']}}
 					</td>
 					<td>
-						{{$prueba['updated_at']}}
+						{{($prueba['updated_at'] == $prueba['created_at'])? '' :$prueba['updated_at']}}
 					</td>
 					
 				</tr>
