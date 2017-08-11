@@ -19,7 +19,17 @@ class DSC_DescargosController extends Controller
      */
     public function index()
     {
-    	//
+       	
+    	$procesos = \App\View_DSC_ListadoprocesosModel::where(['dsc_estadosproceso_iddsc_estadosproceso' => 5])
+    	->orwhere(['dsc_estadosproceso_iddsc_estadosproceso' => 9])
+    	->get()->toArray();
+    	foreach($procesos as $key => $val){
+    		
+    		$procesos[$key]['actions'] =\App\Helpers::generarBotonVinculoProceso($val['iddsc_procesos'], $val['dsc_estadosproceso_iddsc_estadosproceso']);
+    	}
+    	
+    	return response()->json($procesos);
+    	
     }
 
     /**

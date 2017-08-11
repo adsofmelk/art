@@ -16,7 +16,14 @@ class DSC_AmpliacionController extends Controller
      */
     public function index()
     {
-        //
+    	$procesos = \App\View_DSC_ListadoprocesosModel::where(['dsc_estadosproceso_iddsc_estadosproceso' => 3])
+    	->get()->toArray();
+    	foreach($procesos as $key => $val){
+    		
+    		$procesos[$key]['actions'] =\App\Helpers::generarBotonVinculoProceso($val['iddsc_procesos'], $val['dsc_estadosproceso_iddsc_estadosproceso']);
+    	}
+    	
+    	return response()->json($procesos);
     }
 
     /**

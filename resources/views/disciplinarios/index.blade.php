@@ -12,12 +12,13 @@
 
 <div class='row'>
 	<div class='col-sm-12'>
-		<table class='table table-striped' data-toggle="table" data-url="{!!(isset($archivo))?'/dsc_archivoprocesos':'/dsc_procesos'!!}"  
+		<table class='table table-striped' data-toggle="table" data-url="{!!$data_url!!}"  
 			   data-detail-view="true"
 			   data-detail-formatter="detalleRow"
                data-filter-control="true"
                data-filter-show-clear="true" style='width:100%;' id ='tablaDatos'>
 			<thead>
+				<th data-field="actions">Acciones</th>
 				<th data-field="nombresolicitante" data-filter-control="select">Solicitante</th>
 				<th data-field="nombreresponsable" data-filter-control="select">Responsable</th>
 				<th data-field="respodocumento" data-filter-control="select">Cedula</th>
@@ -28,6 +29,7 @@
 				<th data-field="nombreestadoproceso" data-filter-control="select">Estado</th>
 				<th data-field="fechaetapa">Fecha en Etapa</th>
 				<th data-field="diasetapa">Días</th>
+				
 			</thead>
 			<tbody>
 			</tbody>

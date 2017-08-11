@@ -20,7 +20,14 @@ class DSC_FallosController extends Controller
      */
     public function index()
     {
-    	//
+    	$procesos = \App\View_DSC_ListadoprocesosModel::where(['dsc_estadosproceso_iddsc_estadosproceso' => 7])
+    	->get()->toArray();
+    	foreach($procesos as $key => $val){
+    		
+    		$procesos[$key]['actions'] =\App\Helpers::generarBotonVinculoProceso($val['iddsc_procesos'], $val['dsc_estadosproceso_iddsc_estadosproceso']);
+    	}
+    	
+    	return response()->json($procesos);
     }
 
     /**
@@ -435,7 +442,7 @@ class DSC_FallosController extends Controller
 
     	$proceso = \App\View_DSC_ListadoprocesosModel::where(['iddsc_procesos'=>$id])->first();
     	
-    	if($proceso->dsc_estadosproceso_iddsc_estadosproceso != 9){
+    	if($proceso->dsc_estadosproceso_iddsc_estadosproceso != 9 && $proceso->dsc_estadosproceso_iddsc_estadosproceso != 6){
     		return redirect('disciplinarios');
     	}
     	
@@ -479,7 +486,7 @@ class DSC_FallosController extends Controller
     {
     	$proceso = \App\View_DSC_ListadoprocesosModel::where(['iddsc_procesos'=>$id])->first();
 
-    	if($proceso->dsc_estadosproceso_iddsc_estadosproceso != 5){
+    	if($proceso->dsc_estadosproceso_iddsc_estadosproceso != 5 ){
     		return redirect('disciplinarios');
     	}
 

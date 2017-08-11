@@ -2,7 +2,11 @@ $('document').ready(function(){
 		
 	//Inicializador bootstrap-table
 	$('#tablaDatos').bootstrapTable({
-	    columns: [{
+	    columns: [
+    	{
+	        field: 'actions',
+	        title: 'Acciones'
+	    },{
 	        field: 'nombresolicitante',
 	        title: 'Solicitante'
 	    }, {
@@ -32,7 +36,8 @@ $('document').ready(function(){
 	    }, {
 	        field: 'diasetapa',
 	        title: 'Días'
-	    },   
+	    }, 
+	    
 	    
 	    ],
 	});

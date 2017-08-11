@@ -19,7 +19,48 @@ class DSC_DisciplinariosController extends Controller
      */
     public function index()
     {
-        return view('disciplinarios.index');
+        return view('disciplinarios.index',['data_url'=>'/dsc_procesos']);
+    }
+    
+    /**
+     * Muestra procesos que requieren ampliacion
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function indexAmpliacion()
+    {
+    	return view('disciplinarios.index',['data_url'=>'/dsc_ampliacionprocesos']);
+    }
+    
+    /**
+     * Muestra procesos para descargos
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function indexDescargos()
+    {
+    	return view('disciplinarios.index',['data_url'=>'/dsc_descargosprocesos']);
+    }
+    
+    /**
+     * Muestra procesos para descargos
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function indexActaDescargos()
+    {
+    	return view('disciplinarios.index',['data_url'=>'/dsc_actadescargosprocesos']);
+    }
+    
+    
+    /**
+     * Muestra procesos para descargos
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function indexFallos()
+    {
+    	return view('disciplinarios.index',['data_url'=>'/dsc_fallosprocesos']);
     }
     
     /**
@@ -29,7 +70,7 @@ class DSC_DisciplinariosController extends Controller
      */
     public function indexArchivo()
     {
-    	return view('disciplinarios.index',['archivo'=>true]);
+    	return view('disciplinarios.index',['data_url'=>'/dsc_archivoprocesos']);
     }
     
 

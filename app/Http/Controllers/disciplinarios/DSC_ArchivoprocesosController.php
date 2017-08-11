@@ -19,8 +19,14 @@ class DSC_ArchivoprocesosController extends Controller
      */
     public function index()
     {
-    	return response()->json(\App\View_DSC_ListadoprocesosModel::where(['dsc_estadosproceso_iddsc_estadosproceso' => 2])
-    			->get()->toArray());
+    	$procesos = \App\View_DSC_ListadoprocesosModel::where(['dsc_estadosproceso_iddsc_estadosproceso' => 2])
+    	->get()->toArray();
+    	foreach($procesos as $key => $val){
+    		
+    		$procesos[$key]['actions'] =\App\Helpers::generarBotonVinculoProceso($val['iddsc_procesos'], $val['dsc_estadosproceso_iddsc_estadosproceso']);
+    	}
+    	
+    	return response()->json($procesos);
     }
 
     /**

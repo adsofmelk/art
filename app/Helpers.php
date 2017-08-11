@@ -38,6 +38,30 @@ class Helpers {
 		return $cadena;
 	}
 	
+	public static function generarBotonVinculoProceso($iddsc_procesos,$iddsc_estadosproceso){
+		switch($iddsc_estadosproceso){
+			case 1:
+			case 4:{
+				return "<a href='/disciplinarios/$iddsc_procesos/edit' class='btn btn-primary'><i class='fa fa-eye' aria-hidden='true'></i>&nbsp;Evaluar</a>";		
+			}
+			case 3: {
+				return "<a href='/ampliacionproceso/$iddsc_procesos/edit' class='btn btn-primary'><i class='fa fa-reply-all' aria-hidden='true'></i>&nbsp;Ampliar</a>";
+			}
+			case 5: {
+				return "<a href='/descargos/$iddsc_procesos/edit' class='btn btn-primary'><i class='fa fa-balance-scale' aria-hidden='true'></i>&nbsp;Descargos</a>";
+			}
+			case 8: {
+				return "<a href='/actadescargos/$iddsc_procesos/edit' class='btn btn-primary'><i class='fa fa-balance-scale' aria-hidden='true'></i>&nbsp;Generar Acta Descargos</a>";
+			}
+			
+			case 9: {
+				return "<a href='/fallos/$iddsc_procesos/edit' class='btn btn-primary'><i class='fa fa-balance-scale' aria-hidden='true'></i>&nbsp;Generar Fallo</a>";
+			}
+			
+		}
+		
+	}
+	
 	public static function  numtoletras($xcifra)
 	{
 		$xarray = array(0 => "Cero",

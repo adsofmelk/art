@@ -79,13 +79,30 @@ Route::group( ['middleware' => ['auth']], function() {
 	
 	//DSC
 	
+	//PDFS
+	Route::get('pdfcitaciondescargos/{id}','disciplinarios\DSC_DocumentosPDFController@citacionDescargos');
+	Route::get('pdfactadescargos/{id}','disciplinarios\DSC_DocumentosPDFController@actaDescargos');
+	Route::get('pdffallo/{id}','disciplinarios\DSC_DocumentosPDFController@falloProceso');
+	// /. PDFS
+	
 	Route::get('listadopreguntasdescargos/{term}','disciplinarios\DSC_PreguntasdescargosController@buscarPreguntaxSubcadena');
 	
 	Route::get('archivodisciplinarios','disciplinarios\DSC_DisciplinariosController@indexArchivo');
+	Route::get('ampliaciondisciplinarios','disciplinarios\DSC_DisciplinariosController@indexAmpliacion');
+	Route::get('descargosdisciplinarios','disciplinarios\DSC_DisciplinariosController@indexDescargos');
+	Route::get('actadescargosdisciplinarios','disciplinarios\DSC_DisciplinariosController@indexActaDescargos');
+	Route::get('fallosdisciplinarios','disciplinarios\DSC_DisciplinariosController@indexFallos');
+	
 	Route::resource('disciplinarios', 'disciplinarios\DSC_DisciplinariosController');
 	Route::resource('dsc_tiposfalta', 'disciplinarios\DSC_TiposfaltaController');
+	
 	Route::resource('dsc_procesos', 'disciplinarios\DSC_ProcesosController');
 	Route::resource('dsc_archivoprocesos', 'disciplinarios\DSC_ArchivoprocesosController');
+	Route::resource('dsc_ampliacionprocesos', 'disciplinarios\DSC_AmpliacionController');
+	Route::resource('dsc_descargosprocesos', 'disciplinarios\DSC_DescargosController');
+	Route::resource('dsc_actadescargosprocesos', 'disciplinarios\DSC_ActaDescargosController');
+	Route::resource('dsc_fallosprocesos', 'disciplinarios\DSC_FallosController');
+	
 	Route::resource('dsc_evaluacionprocesos', 'disciplinarios\DSC_GestionprocesoController');
 	Route::resource('ampliacionproceso', 'disciplinarios\DSC_AmpliacionController');
 	Route::resource('descargos', 'disciplinarios\DSC_DescargosController');

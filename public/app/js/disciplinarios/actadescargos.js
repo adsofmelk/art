@@ -11,6 +11,8 @@ savePNGButton2 = wrapper2.querySelector("[data-action=save-png]"),
 canvas2 = wrapper2.querySelector("canvas"),
 signaturePad2;
 
+
+
 // Adjust canvas coordinate space taking into account pixel ratio,
 // to make it look crisp on mobile devices.
 // This also causes canvas to be cleared.
@@ -30,6 +32,35 @@ resizeCanvas();
 signaturePad = new SignaturePad(canvas);
 
 signaturePad2 = new SignaturePad(canvas2);
+
+if($('#testigo').val() == 'true'){
+	
+	var wrappertestigo = document.getElementById("signature-padtestigo"),
+	clearButtontestigo = wrappertestigo.querySelector("[data-action=clear]"),
+	savePNGButtontestigo = wrappertestigo.querySelector("[data-action=save-png]"),
+	canvastestigo = wrappertestigo.querySelector("canvas"),
+	signaturePadtestigo;
+	
+	signaturePadtestigo = new SignaturePad(canvastestigo);
+	clearButtontestigo.addEventListener("click", function (event) {
+	    signaturePadtestigo.clear();
+	});
+	
+	savePNGButtontestigo.addEventListener("click", function (event) {
+	    if (signaturePadtestigo.isEmpty()) {
+	    	$('#modalHeader').html("Error");
+	    	$('#modalBody').html("Aun no ha ingresado una firma.");
+	    	$('#myModal').modal('toggle');
+	    	
+	    } else {
+	    	$('#signature-padtestigo').hide();
+	    	var firmatestigo = signaturePadtestigo.toDataURL(); 
+	        $('#firmatestigo').val(firmatestigo);
+	        $('#firmatestigopng').html("<img src='"+firmatestigo+"' width='300'>");
+	        verificarBotonGuardado();
+	    }
+	});
+}
 
 clearButton.addEventListener("click", function (event) {
     signaturePad.clear();
@@ -72,8 +103,17 @@ savePNGButton2.addEventListener("click", function (event) {
 
 function verificarBotonGuardado(){
 	if(($('#firmaimplicado').val() != '') && ($('#firmaanalista').val() != '')){
-		console.log('firmas requeridas ok');
-		$('#btn-save').prop('disabled', false);
+		if($('#testigo').val() == 'true'){
+			if($('#firmatestigo').val() != ''){
+				console.log('firma Testigo requerida ok');
+				$('#btn-save').prop('disabled', false);
+			}
+			
+		}else{
+			console.log('firmas requeridas ok');
+			$('#btn-save').prop('disabled', false);
+		}
+		
 	}
 }
 

@@ -10,9 +10,140 @@ use App\DSC_ProcesosModel;
 use App\Authorizable;
 use Mail;
 
-class DSC_ActaDescargosController extends Controller
+class DSC_DocumentosPDFController extends Controller
 {
 	use Authorizable;
+	
+	public function citacionDescargos($id)
+	{
+		$proceso = \App\View_DSC_ListadoprocesosModel::where(['iddsc_procesos'=>$id])->first();
+		$descargos = \App\DSC_ProcesosHasDescargosModel::select([
+				'iddsc_descargos',
+				'dsc_procesos_iddsc_procesos',
+				'iddsc_procesos_has_dsc_descargos',
+				'nombres',
+				'apellidos',
+				'sedes.nombre',
+				'fechaprogramada',
+				'dsc_descargos.created_at as fechanotificacion',
+				
+		])->join('dsc_descargos','iddsc_descargos','=','dsc_descargos_iddsc_descargos')
+		->join('sedes','idsedes','=','sedes_idsedes')
+		->join('personas','idpersonas','=','useranalista_id')
+		->where([
+				'dsc_procesos_iddsc_procesos' => $id,
+				'dsc_procesos_has_dsc_descargos.estado' => true,
+		])->first();
+		
+		if($descargos){
+			
+			$pruebas = \App\DSC_PruebasModel::join('dsc_estadosprueba','iddsc_estadosprueba','=','dsc_estadosprueba_iddsc_estadosprueba')
+			->where(['dsc_procesos_iddsc_procesos' => $id ])->get();
+			
+			$listadopruebas = '<ol>';
+			
+			foreach ($pruebas as $prueba){
+				if($prueba->dsc_estadosprueba_iddsc_estadosprueba == 2){
+					$listadopruebas.='<li>'.$prueba->descripcion.'</li>';
+				}
+			}
+			$listadopruebas.='</ol>';
+			
+			
+			$plantilla = \App\DSC_PlantillasModel::find(2)->contenido;
+			
+			
+			setlocale(LC_TIME, 'es_CO.UTF-8');
+			
+			$time=strtotime($descargos->fechanotificacion);
+			
+			$month=date("n",$time);
+			$day = strftime('%e',$time);
+			$year = date('Y', $time);
+			
+			
+			$time=strtotime($descargos->fechaprogramada);
+			$pmonth=date("n",$time);
+			$pday = strftime('%e',$time);
+			$pyear = date('Y', $time);
+			$phour = date('g:i a' , $time);
+			
+			
+			
+			$campos = [
+					'{{$dia}}' => $day,
+					'{{$mes}}' => \App\Helpers::numbertoMonth($month),
+					'{{$anio}}'=> $year,
+					'{{$nombreresponsable}}' => $proceso['nombreresponsable'],
+					'{{$echos}}' => $proceso['hechos'],
+					'{{$nivelfalta}}' => $proceso['nombrenivelafectacion'],
+					'{{$cargos}}' => $proceso['nombrefalta'],
+					'{{$pruebas}}' => $listadopruebas,
+					'{{$diacitacion}}' => $pday,
+					'{{$mescitacion}}' => \App\Helpers::numbertoMonth($pmonth),
+					'{{$aniocitacion}}' => $pyear,
+					'{{$horacitacion}}' => $phour,
+					
+			];
+			
+			$contenido = \App\Helpers::remplazarCampos($plantilla, $campos);
+			
+			
+			$view =  \View::make('disciplinarios.plantillaspdf._template_documento',[
+					'contenido'=>$contenido,
+			])->render();
+			$pdf = \App::make('dompdf.wrapper');
+			$pdf->loadHTML($view);
+			
+			return $pdf->stream($id.'.pdf');
+		}else{
+			return "El documento no existe";
+		}
+	}
+	
+	
+	public function actaDescargos($id)
+	{
+		
+		if($procesohasdescargos = \App\DSC_ProcesosHasDescargosModel::where([
+				'estado' => true,
+				'dsc_procesos_iddsc_procesos' => $id
+		])->first()){
+			$descargos = \App\DSC_DescargosModel::find($procesohasdescargos->dsc_descargos_iddsc_descargos);
+			$view =  \View::make('disciplinarios.plantillaspdf._template_documento',[
+					'contenido'=>$descargos->actadescargos,
+			])->render();
+			$pdf = \App::make('dompdf.wrapper');
+			$pdf->loadHTML($view);
+			
+			return $pdf->stream($id.'.pdf');
+		}else{
+			return "El documento no existe";
+		}
+	}
+	
+	
+	public function falloProceso($id)
+	{
+		
+		if($procesohasdescargos = \App\DSC_ProcesosHasDescargosModel::where([
+				'estado' => true,
+				'dsc_procesos_iddsc_procesos' => $id
+		])->first()){
+			$descargos = \App\DSC_DescargosModel::find($procesohasdescargos->dsc_descargos_iddsc_descargos);
+			$view =  \View::make('disciplinarios.plantillaspdf._template_documento',[
+					'contenido'=>$descargos->textodelfallo,
+			])->render();
+			$pdf = \App::make('dompdf.wrapper');
+			$pdf->loadHTML($view);
+			
+			return $pdf->stream($id.'.pdf');
+		}else{
+			return "El documento no existe";
+		}
+	}
+	
+	
     /**
      * Display a listing of the resource.
      *
@@ -20,16 +151,9 @@ class DSC_ActaDescargosController extends Controller
      */
     public function index()
     {
-    	//Mail::to('adsofmelk@gmail.com')->send(new \App\Mail\DSC_ActaDescargosMail());
+    	Mail::to('adsofmelk@gmail.com')->send(new \App\Mail\DSC_ActaDescargosMail());
     	
-    	$procesos = \App\View_DSC_ListadoprocesosModel::where(['dsc_estadosproceso_iddsc_estadosproceso' => 8])
-    	->get()->toArray();
-    	foreach($procesos as $key => $val){
-    		
-    		$procesos[$key]['actions'] =\App\Helpers::generarBotonVinculoProceso($val['iddsc_procesos'], $val['dsc_estadosproceso_iddsc_estadosproceso']);
-    	}
-    	
-    	return response()->json($procesos);
+    	echo "revisar correo";
     	
     }
 
@@ -69,21 +193,7 @@ class DSC_ActaDescargosController extends Controller
 				_____________________________________<br>
 		        C.C. " . $request['documentoresponsable'] . " de {\$ciudad}<br>
 		      	<strong>El trabajador</strong></td>
-				</tr>";
-    		
-    		if(isset($request['firmatestigo'])){
-    			
-    			$pie_acta .= "<tr>".
-      			"<td colspan='2'>
-				<img src='".$request['firmatestigo']."' style='width:300px;'><br>
-				_____________________________________<br>
-				" . $request['nombretestigo'] . "
-		        C.C. " . $request['documentotestigo'] . " de {\$ciudad}<br>
-		      	<strong>Testigo</strong></td>".
-      			"</tr>";
-    		}
-    		
-    		$pie_acta .= "
+				</tr>
 			</table>";
     		
     		
@@ -118,17 +228,6 @@ class DSC_ActaDescargosController extends Controller
     		$descargos->save();
     		
     		// /.ACTUALIZAR DESCARGOS
-    		
-    		
-    		// ACTUALIZAR FIRMA DE TESTIGO
-    		
-    		$testigo = \App\DSC_DescargostestigosModel::where([
-    				'dsc_descargos_iddsc_descargos' => $request['iddsc_descargos']
-    		])->first();
-    		
-    		$testigo->firma = $request['firmatestigo'];
-    		
-    		// /. ACTUALIZAR FIRMA TESTIGO
     		
     		
     		// GUARDAR HISTORICO DE GESTION
@@ -172,25 +271,7 @@ class DSC_ActaDescargosController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
-    {
 
-        if($procesohasdescargos = \App\DSC_ProcesosHasDescargosModel::where([
-        		'estado' => true,
-        		'dsc_procesos_iddsc_procesos' => $id
-        ])->first()){
-        	$descargos = \App\DSC_DescargosModel::find($procesohasdescargos->dsc_descargos_iddsc_descargos);
-        	$view =  \View::make('disciplinarios.plantillaspdf._template_documento',[
-        			'contenido'=>$descargos->actadescargos,
-        	])->render();
-        	$pdf = \App::make('dompdf.wrapper');
-        	$pdf->loadHTML($view);
-        	
-        	return $pdf->stream($id.'.pdf');
-        }else{
-        	return "";
-        }
-    }
     
         
     /**
@@ -202,9 +283,7 @@ class DSC_ActaDescargosController extends Controller
     public function edit($id)
     {
     	$proceso = \App\View_DSC_ListadoprocesosModel::where(['iddsc_procesos'=>$id])->first();
-    	if( ! sizeof($proceso) >0 ){
-    		return redirect('disciplinarios');
-    	}
+    	
     	if($proceso->dsc_estadosproceso_iddsc_estadosproceso != 8){
     		return redirect('disciplinarios');
     	}
@@ -281,7 +360,7 @@ class DSC_ActaDescargosController extends Controller
     	if( sizeof($descargostestigos) > 0){
     		$testigos = '<p><strong>Si:</strong>';
     		foreach($descargostestigos as $testigo){
-    			$testigos.="<p><strong>Nombre:</strong> ".$testigo->nombre."  <strong> Documento: </strong> ".$testigo->documento."</p>";
+    			$testigos.="<p><strong>Nombre:</strong> ".$testigo->nombre."  <strong>Documento:</strong> ".$testigo->documento."</p>";
     		}
     		$testigos.='</p>';
     	}
@@ -337,7 +416,6 @@ class DSC_ActaDescargosController extends Controller
     			'gestiones' => $gestiones,
     			'descargos' => $descargos,
     			'plantilla' => $plantilla,
-    			'testigos' => $descargostestigos,
     	]);
     }
 
