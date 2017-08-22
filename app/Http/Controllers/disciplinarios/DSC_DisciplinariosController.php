@@ -54,7 +54,17 @@ class DSC_DisciplinariosController extends Controller
     
     
     /**
-     * Muestra procesos para descargos
+     * Muestra procesos paa revision de fallo
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function indexFallosTemporales()
+    {
+    	return view('disciplinarios.index',['data_url'=>'/dsc_fallostemporalesprocesos']);
+    }
+    
+    /**
+     * Muestra procesos ya fallados
      *
      * @return \Illuminate\Http\Response
      */

@@ -29,6 +29,22 @@ class DSC_FallosController extends Controller
     	
     	return response()->json($procesos);
     }
+    
+    public function getFallosTemporales()
+    {
+    	$procesos = \App\View_DSC_ListadoprocesosModel::where(['dsc_estadosproceso_iddsc_estadosproceso' => 6])
+    	->get()->toArray();
+    	foreach($procesos as $key => $val){
+    		
+    		$procesos[$key]['actions'] =\App\Helpers::generarBotonVinculoProceso($val['iddsc_procesos'], $val['dsc_estadosproceso_iddsc_estadosproceso']);
+    	}
+    	
+    	return response()->json($procesos);
+    }
+    
+    
+    
+    
 
     /**
      * Show the form for creating a new resource.
@@ -126,6 +142,48 @@ class DSC_FallosController extends Controller
 
     	return $respuesta;
 
+    }
+    
+    
+    
+    public function editarFallo($id){
+    	
+    	$proceso = \App\View_DSC_ListadoprocesosModel::where(['iddsc_procesos'=>$id])->first();
+    	
+    	if($proceso->dsc_estadosproceso_iddsc_estadosproceso != 6){
+    		return redirect('disciplinarios');
+    	}
+    	
+    	$descargos = \App\DSC_ProcesosHasDescargosModel::select([
+    			'iddsc_descargos',
+    			'dsc_procesos_iddsc_procesos',
+    			'iddsc_procesos_has_dsc_descargos',
+    			'nombres',
+    			'apellidos',
+    			'sedes.nombre',
+    			'fechaprogramada',
+    			'iniciodiligencia'
+    			
+    	])->join('dsc_descargos','iddsc_descargos','=','dsc_descargos_iddsc_descargos')
+    	->join('sedes','idsedes','=','sedes_idsedes')
+    	->join('personas','idpersonas','=','useranalista_id')
+    	->where([
+    			'dsc_procesos_iddsc_procesos' => $id,
+    			'dsc_procesos_has_dsc_descargos.estado' => true,
+    	])->first();
+    	
+    	$detallefallo = \App\DSC_DescargosModel::find($descargos->iddsc_descargos);
+    	
+    	$tiposdecisionesproceso = \App\DSC_TiposdecisionesprocesoModel::pluck('nombre','iddsc_tiposdecisionesproceso');
+    	
+    	
+    	return view('disciplinarios.editarfallo',[
+    			'proceso' => $proceso,
+    			'descargos' => $descargos,
+    			'detallefallo' => $detallefallo,
+    			'tiposdecisionesproceso' => $tiposdecisionesproceso,
+    	]);
+    	
     }
 
 

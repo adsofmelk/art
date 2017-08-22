@@ -50,6 +50,9 @@ class Helpers {
 			case 5: {
 				return "<a href='/descargos/$iddsc_procesos/edit' class='btn btn-primary'><i class='fa fa-balance-scale' aria-hidden='true'></i>&nbsp;Descargos</a>";
 			}
+			case 6: {
+				return "<a href='/editarfallo/$iddsc_procesos'  class='btn btn-primary'><i class='fa fa-balance-scale' aria-hidden='true'></i>&nbsp;Modificar Fallo Temporal</a>";	
+			}
 			case 8: {
 				return "<a href='/actadescargos/$iddsc_procesos/edit' class='btn btn-primary'><i class='fa fa-balance-scale' aria-hidden='true'></i>&nbsp;Generar Acta Descargos</a>";
 			}

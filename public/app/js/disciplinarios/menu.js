@@ -27,10 +27,12 @@ $('document').ready(function(){
 		  }
 		  case 'fallotemporal' : {
 			  console.log('Fallo temporal');
+			  window.location.replace("/fallostemporalesdisciplinarios");
 			  break;
 		  }
 		  case 'fallodefinitivo' : {
 			  console.log('Fallo Definitivo');
+			  
 			  window.location.replace("/fallosdisciplinarios");
 			  break;
 		  }
