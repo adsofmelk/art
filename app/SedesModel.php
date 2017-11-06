@@ -22,6 +22,7 @@ class SedesModel extends Model implements AuditableContract
 	protected $primaryKey = 'idsedes'; //llave primaria
 	
 	protected $fillable = [
+	        'idsedes',
 			'nombre',
 			'direccion',
 			'telefono',
@@ -36,7 +37,7 @@ class SedesModel extends Model implements AuditableContract
 		
 		static::creating(function($table)
 		{
-			$table->idsedes= str_random(36); //crear id ramdom de tipo char
+			//$table->idsedes= str_random(36); //crear id ramdom de tipo char
 		});
 	}
 	

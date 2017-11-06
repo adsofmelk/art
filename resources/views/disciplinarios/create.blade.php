@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@include('disciplinarios._menu')
+@include('disciplinarios._menu_noajax')
 
 @section('title', 'Nuevo Proceso Disciplinario')
 @section('desc','Debera adjuntar las pruebas requeridas segun el tipo de falta')

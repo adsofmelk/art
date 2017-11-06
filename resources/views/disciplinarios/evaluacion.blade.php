@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@include('disciplinarios._menu')
+@include('disciplinarios._menu_noajax')
 
 @section('title', 'Evaluación Proceso Disciplinario')
 @section('desc','Debera evaluar la pertinencia de cada prueba aportada según sea la falta')
@@ -37,6 +37,9 @@
 @section('scripts')
 
 <!--  Scripts del Modulo -->	
+{!!Html::script("/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js")!!}
+{!!Html::script("/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.es.js")!!}
+{{Html::script('/js/ckeditor/ckeditor.js') }}
 {!!Html::script("/app/js/disciplinarios/evaluacion.js")!!}
 @endsection
 

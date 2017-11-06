@@ -9,24 +9,22 @@ use Auth;
 use App\DSC_ProcesosModel;
 use App\Authorizable;
 
-class DSC_ArchivoprocesosController extends Controller
+class DSC_PlantillasController extends Controller
 {
 	use Authorizable;
-    /**
+    
+	public function getListadoPorTipo($idtipoplantilla){
+	    
+	}
+    
+	/**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-    	$procesos = \App\View_DSC_ListadoprocesosModel::where(['dsc_estadosproceso_iddsc_estadosproceso' => 2])
-    	->get()->toArray();
-    	foreach($procesos as $key => $val){
-    		
-    		$procesos[$key]['actions'] =\App\Helpers::generarBotonVinculoProceso($val['iddsc_procesos'], $val['dsc_estadosproceso_iddsc_estadosproceso']);
-    	}
-    	
-    	return response()->json($procesos);
+        
     }
 
     /**
@@ -58,8 +56,9 @@ class DSC_ArchivoprocesosController extends Controller
      */
     public function show($id)
     {
-
-        //
+        $plantilla = \App\DSC_PlantillasModel::find($id);
+        return response()->json($plantilla);
+        
     }
     
         

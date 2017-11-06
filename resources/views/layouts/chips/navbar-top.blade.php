@@ -31,7 +31,7 @@
             <ul class="dropdown-menu">
               <!-- The user image in the menu -->
               <li class="user-header">
-                <img src="/adminLTE-2.4/dist/img/avatar5.png" class="img-circle" alt="User Image">
+                <img src="{{ \App\Helpers::getUsuario()['avatar'] }}" class="img-circle" alt="User Image">
 
                 <p>
                   {{ \App\Helpers::getUsuario()['nombres'] }} {{ \App\Helpers::getUsuario()['apellidos'] }}
@@ -43,7 +43,7 @@
               <!-- Menu Footer-->
               <li class="user-footer">
                 <div class="pull-left">
-                  <a href="#" class="btn btn-default btn-flat">Configurar	</a>
+                  
                 </div>
                 <div class="pull-right">
                   

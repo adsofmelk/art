@@ -54,45 +54,68 @@ class DSC_ActaDescargosController extends Controller
     		
     	try{
     		
-    		$pie_acta = "
-			<table style='width:100%'>
-				<tr> 
-					    		      
-		      <td>
-				<img src='".$request['firmaanalista']."' style='width:300px;'><br>
-				_____________________________________<br>
-		        Analista de Relaciones Laborales<br>
-		      	<strong>BRM S.A.</strong></td>
-		
-		      <td>
-				<img src='".$request['firmaimplicado']."' style='width:300px;'><br>
-				_____________________________________<br>
-		        C.C. " . $request['documentoresponsable'] . " de {\$ciudad}<br>
-		      	<strong>El trabajador</strong></td>
-				</tr>";
-    		
-    		if(isset($request['firmatestigo'])){
-    			
-    			$pie_acta .= "<tr>".
-      			"<td colspan='2'>
-				<img src='".$request['firmatestigo']."' style='width:300px;'><br>
-				_____________________________________<br>
-				" . $request['nombretestigo'] . "
-		        C.C. " . $request['documentotestigo'] . " de {\$ciudad}<br>
-		      	<strong>Testigo</strong></td>".
-      			"</tr>";
-    		}
-    		
-    		$pie_acta .= "
-			</table>";
-    		
-    		
-    		DB::beginTransaction();
-    		
-			
+    	    
+    	    DB::beginTransaction();
+    	    
+    	    $proceso = \App\DSC_ProcesosModel::find($request['dsc_procesos_iddsc_procesos']);
+    	    
+    	    $implicado = \App\PersonasModel::find($proceso->responsable_id);
+    	    
+    	    $analista = \App\Helpers::getUsuario();
+    	    
+    	    $campos = [
+    	            '{{$firmaanalista}}' => '<img src="'.$request['firmaanalista'].'" style="width:300px;"><br>___________________________',
+    	            '{{$nombreanalista}}' => $analista->nombres . " " . $analista->apellidos,
+    	            '{{$documentoanalista}}' => 'C.C. ' . $analista->documento,
+    	            '{{$firmaimplicado}}' => '<img src="'.$request['firmaimplicado'].'" style="width:300px;"><br>___________________________',
+    	            '{{$nombreimplicado}}' => $implicado->nombres . " ". $implicado->apellidos,
+    	            '{{$documentoimplicado}}' => "CC. ".$request['documentoresponsable'],
+    	            ];
+    	    
+    	    if(isset($request['firmatestigo'])){
+    	        $campos = array_merge($campos,[
+    	                '{{$firmatestigo1}}' => '<img src="'.$request['firmatestigo'].'" style="width:300px;"><br>___________________________',
+    	                '{{$nombretestigo1}}'  => $request['nombretestigo'],
+    	                '{{$documentotestigo1}}'  => "CC. ".$request['documentotestigo']."<br><strong>Testigo</strong>",
+    	        ]);
+    	    }else{
+    	        $campos = array_merge($campos,[
+    	                '{{$firmatestigo1}}' => "",
+    	                '{{$nombretestigo1}}'  => "",
+    	                '{{$documentotestigo1}}'  => "",
+    	        ]);
+    	    }
+    	    
+    	    if(!isset($request['aceptaacta'])){
+    	        
+    	        $campos = array_merge($campos,[
+    	                '{{$firmatestigo2}}' => '<img src="'.$request['actatestigo1firma'].'" style="width:300px;"><br>___________________________',
+    	                '{{$nombretestigo2}}'  => $request['actatestigo1nombre'],
+    	                '{{$documentotestigo2}}'  => "CC. ".$request['actatestigo1documento']."<br><strong>Testigo</strong>",
+    	                '{{$firmatestigo3}}' => '<img src="'.$request['actatestigo2firma'].'" style="width:300px;"><br>___________________________',
+    	                '{{$nombretestigo3}}'  => $request['actatestigo2nombre'],
+    	                '{{$documentotestigo3}}'  => "CC. ".$request['actatestigo2documento']."<br><strong>Testigo</strong>",
+    	        ]);
+    	       
+    	        
+    	    }else{
+    	        
+    	        $campos = array_merge($campos,[
+	                '{{$firmatestigo2}}'  => '',
+	                '{{$nombretestigo2}}'  => '',
+	                '{{$documentotestigo2}}'  => '',
+	                '{{$firmatestigo3}}'  => '',
+	                '{{$nombretestigo3}}' => '',
+	                '{{$documentotestigo3}}' => '',
+    	        ]);
+    	    }
+    	            
+
+    	    
+    	    $pie_acta = \App\Helpers::cargarPlantilla(16, $campos);
+    	    
+    	   
     		//ACTUALIZAR PROCESO
-    		$proceso = \App\DSC_ProcesosModel::find($request['dsc_procesos_iddsc_procesos']);
-    		
     		$proceso->dsc_estadosproceso_iddsc_estadosproceso = 9;
     		
     		$proceso->save();
@@ -103,13 +126,38 @@ class DSC_ActaDescargosController extends Controller
     		//ACTUALIZAR DESCARGOS
     		$descargos = \App\DSC_DescargosModel::find($request['iddsc_descargos']);
     		
-    		$descargos->firmaimplicado = $request['firmaimplicado'];
     		
     		$descargos->firmaanalista = $request['firmaanalista'];
     		
     		$descargos->actadescargos = $request['plantilla'] . $pie_acta;
     		
     		$descargos->userdiligencio_id = Auth::user()->id;
+    		
+    		if(isset($request['aceptaacta'])){
+    		    
+    		    $descargos->aceptaacta = true;
+    		    
+    		    $descargos->firmaimplicado = $request['firmaimplicado'];
+    		    
+    		    
+    		}else{
+    		    
+    		    $descargos->aceptaacta = false;
+    		    
+    		    $descargos->actatestigo1nombre = $request['actatestigo1nombre'];
+    		    
+    		    $descargos->actatestigo1documento = $request['actatestigo1documento'];
+    		    
+    		    $descargos->actatestigo1firma  = $request['actatestigo1firma'];
+    		    
+    		    $descargos->actatestigo2nombre = $request['actatestigo2nombre'];
+    		    
+    		    $descargos->actatestigo2documento  = $request['actatestigo2documento'];
+    		    
+    		    $descargos->actatestigo2firma = $request['actatestigo2firma'];
+    		    
+    		}
+    		
     		
     		$descargos->dsc_estadosproceso_iddsc_estadosproceso = 9;
     		
@@ -121,12 +169,17 @@ class DSC_ActaDescargosController extends Controller
     		
     		
     		// ACTUALIZAR FIRMA DE TESTIGO
+    		if(isset($request['firmatestigo'])){
+    			$testigo = \App\DSC_DescargostestigosModel::where([
+    					'dsc_descargos_iddsc_descargos' => $request['iddsc_descargos']
+    			])->first();
+    			if(sizeof($testigo) >0 ){
+    				$testigo->firma = $request['firmatestigo'];
+    				$testigo->save();
+    			}
+    			
+    		}
     		
-    		$testigo = \App\DSC_DescargostestigosModel::where([
-    				'dsc_descargos_iddsc_descargos' => $request['iddsc_descargos']
-    		])->first();
-    		
-    		$testigo->firma = $request['firmatestigo'];
     		
     		// /. ACTUALIZAR FIRMA TESTIGO
     		
@@ -135,7 +188,7 @@ class DSC_ActaDescargosController extends Controller
     		
     		\App\DSC_GestionprocesoModel::create([
     				'detalleproceso' => 'Firma de acta de descargos',
-    				'retirotemporal' => $proceso->retirotemporal,
+    		        'retirotemporal' => ($proceso->retirotemporal!=null)?$proceso->retirotemporal:0,
     				'dsc_tiposdecisionesevaluacion_iddsc_tiposdecisionesevaluacion' => 5,
     				'dsc_procesos_iddsc_procesos' => $request['dsc_procesos_iddsc_procesos'],
     				'gestor_id' => Auth::user()->id,
@@ -144,10 +197,25 @@ class DSC_ActaDescargosController extends Controller
     		]);
     		
     		// GUARDAR HISTORICO DE GESTION /.
-    		    		
-    			
+    		  
+    		
+    		
+    		//ACTUALIZAR FIRMA DE ANALISTA
+    		
+    		$analista = \App\User::find(Auth::user()['id']);
+    		$analista->firma = $request['firmaanalista'];
+    		$analista->save();
+    		
+    		
+    		
+    		
+    		
     		DB::commit();
-    			
+    		
+    		
+    		///ENVIAR CORREO CON ACTA DE DESCARGOS
+    		
+    		\App\Helpers::emailActaDescargos($request['dsc_procesos_iddsc_procesos']);
     		
     		
     	} catch (Exception $e){
@@ -201,7 +269,7 @@ class DSC_ActaDescargosController extends Controller
      */
     public function edit($id)
     {
-    	$proceso = \App\View_DSC_ListadoprocesosModel::where(['iddsc_procesos'=>$id])->first();
+    	$proceso = \App\Helpers::getInfoProceso($id);//\App\View_DSC_ListadoprocesosModel::where(['iddsc_procesos'=>$id])->first();
     	if( ! sizeof($proceso) >0 ){
     		return redirect('disciplinarios');
     	}
@@ -236,7 +304,7 @@ class DSC_ActaDescargosController extends Controller
     	
     	$referenciafalta = \App\DSC_TiposfaltaModel::find($proceso->iddsc_tiposfalta);
     	
-    	
+    	/*
     	$descargos = \App\DSC_ProcesosHasDescargosModel::select([
     			'iddsc_descargos',
     			'dsc_procesos_iddsc_procesos',
@@ -254,12 +322,16 @@ class DSC_ActaDescargosController extends Controller
     			'dsc_procesos_iddsc_procesos' => $id,
     			'dsc_procesos_has_dsc_descargos.estado' => true,
     	])->first();
+    	*/
     	
+    	$descargos = \App\Helpers::getInfoDescargos($id);
+    	$descargos = $descargos[0];
     	
     	$descargosdetalle = \App\DSC_DescargosdetalleModel::where([
     			'dsc_descargos_iddsc_descargos' => $descargos->iddsc_descargos
-    	])->get();
+    	])->orderby('iddsc_descargosdetalle','asc')->get();
     	
+    	$preguntasrespuestas ='';
     	
     	if(sizeof($descargosdetalle) > 0){
     		$preguntasrespuestas = '<ol>';

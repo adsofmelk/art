@@ -1,3 +1,4 @@
+
 $('document').ready(function(){
 	
 	var DBPreguntas = '';
@@ -21,6 +22,20 @@ $('document').ready(function(){
 	$('#contenedoraccion').hide();
 	// /.PREPARAR CONTENEDORDE REPROGRAMAR DESCARGOS
 	
+	
+	//INICIAR DATEPICKER PARA FECHA DE DESCARGOS
+	
+    $('.form_datetime').datetimepicker({
+        language:  'es',
+        weekStart: 1,
+        todayBtn:  1,
+		autoclose: 1,
+		todayHighlight: 1,
+		startView: 2,
+		forceParse: 0,
+        showMeridian: 1
+    });
+  // /.INICIAR DATEPICKER PARA FECHA DE DESCARGOS
 	
 	 //INICIAR BOTON SWITCH ASISTIO EL IMPLICADO
 	 $("#asistio").bootstrapSwitch({'state': false});
@@ -56,7 +71,7 @@ $('document').ready(function(){
 	 
 	// /.INICIAR BOTON SWITCH ASISTIO EL IMPLICADO
 	
-	 
+
 	 //INICIAR BOTON SWITCH PRESENTA TESTIGOS
 	 $("#presentatestigos").bootstrapSwitch({'state': false});
 	 $("#presentatestigos").val(false);
@@ -96,13 +111,14 @@ $('document').ready(function(){
 			$('#reprogramardescargos').val(true);
 			$('#contenedorfecha').show();
 			$('#contenedoraccion').hide();
+			$('#contenedor_textodelfallo').hide();
 			$('#lb_observacionesausencia').html('Justificación');
 			
 		  }else{
 			  $('#reprogramardescargos').val(false);
 			  $('#contenedorfecha').hide();
 			  $('#contenedoraccion').show();
-			  $('#lb_observacionesausencia').html('<h3>Redación del fallo</h3>');
+			  $('#contenedor_textodelfallo').show();
 		  }
 		  
 	});
@@ -152,8 +168,8 @@ $('document').ready(function(){
 				 								'<div class="col-lg-3 form-group">'+
 				 								'<strong>Adjunta Prueba </strong>&nbsp;&nbsp;&nbsp;<input class="form-control" Type="checkbox" data-on-text="Si" data-off-text="No" name="adjuntapruebas_'+(np)+'" id="adjuntapruebas_'+(np)+'">'+
 				 								'</div>'+
-				 								'<div class="col-lg-9  form-group" >'+
-				 								'<input style="display:none;" type="file" name="prueba_' + (np) +'" id="prueba_' + (np) +'" >'+
+				 								'<div class="col-lg-9  form-group" id="contenedorprueba_' + (np) +'">'+
+				 								
 				 								'</div>'+
 				 								'</div>'+
 				 							'</div>');
@@ -181,12 +197,14 @@ $('document').ready(function(){
 				  
 				  if(state){
 					$('#adjuntapruebas_' + np).val(true);
-					$('#prueba_' + np ).show();
+					$('#contenedorprueba_' + np).append('<input style="" type="file" name="prueba_' + (np) +'" id="prueba_' + (np) +'" >');
+					//$('#prueba_' + np ).show();
 			
 					
 				  }else{
 					  $('#adjuntapruebas_' + np).val(false);
-					  $('#prueba_' + np ).hide();
+					  //$('#prueba_' + np ).hide();
+					  $('#contenedorprueba_' + np).empty();
 
 				  }
 				  
@@ -312,7 +330,14 @@ $('document').ready(function(){
 	        		 $('#myModal').modal('toggle');
 	        		 
 	        		 $('#content').empty();
-	        		 $('#content').load('/dsc_procesos/' + result.iddsc_procesos);
+	        		 
+	        		 
+	        		 //$('#content').load('/dsc_procesos/' + result.iddsc_procesos);
+	        		 $('#content').load('/dsc_procesos/' + result.iddsc_procesos, function(){
+	        			 
+	        			 $('#spinner').hide();
+	        			 
+	        		 });
 	        	 }else{
 	        		 console.log(result);
 	        		 
@@ -322,8 +347,9 @@ $('document').ready(function(){
 	        		 
 	        		 
 	        		 $('#btn-save').prop('disabled', false);
+	        		 $('#spinner').hide();
 	        	 }
-	        	 $('#spinner').hide();
+	        	 
 	         },
 	         error : function(jqXHR, textStatus, errorThrown) {
 	        	 
@@ -349,6 +375,8 @@ $('document').ready(function(){
 	 //FUNCIONES
 	 
 	 
+	 
+	 
 	 // NO ASISTIO
 	 function validarNoAsistio(){
 		 console.log('validar no asistio');
@@ -364,6 +392,9 @@ $('document').ready(function(){
 				console.trace();
 				continuar = false;
 			}
+			
+			
+			 
 		}// /.EMITIR FALLO
 		 
 		if(!$.trim($('#observacionesausencia').val()).length ){

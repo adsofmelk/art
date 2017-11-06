@@ -1,28 +1,20 @@
 @section('modmenu')
 	<div class='row'>
-		<div class="col-sm-12 form-group">
-			<h3>Disciplinarios</h3>
-		</div>
-		<div class='col-sm-3 form-group'>
-				{{Form::select('dsc_filtro_menu',[ 'activos' => 'Activos',
-													'ampliacion' => 'Requieren Ampliación',
-													'descargos' => 'En descargos',
-													'actadescargos' => 'Acta de descargos',
-													'fallotemporal' => 'Con Fallo para Revisar',
-													'fallodefinitivo' => 'Con Fallo Definitivo',
-													'archivados' => 'Archivados']
-											,null,['id' => 'dsc_filtro_menu' ,  'class' => 'form-control'])}}
-		</div>
-		<div class="col-sm-3 form-group">
-			{{Form::select('dsc_anio_filtro_menu',['2017'],null,['id' => 'dsc_anio_filtro_menu', 'class' => 'form-control' ])}}
-		</div>
-		
-		<div class="col-sm-3 form-group">
-			<input type = 'button' name= 'dsc_boton_buscar' id = 'dsc_boton_buscar' value = 'Filtrar' class='form-control btn btn-default'>
+		<div class='col-sm-6 form-group'>
+				{{Form::select('dsc_filtro_menu',\App\DSC_EstadosProcesoModel::orderby('iddsc_estadosproceso','asc')->pluck('nombre','nombre'),null,['id' => 'dsc_filtro_menu' ,  'class' => 'form-control','placeholder'=>'Filtrar Estado'])}}
+				
 		</div>
 		
 		<div class='col-sm-3 form-group'>
-				<a href="{{ route('disciplinarios.create') }}" class="btn btn-success"><i class="fa fa-plus"></i> Nuevo proceso</a>
+			<a href='/disciplinarios' class='btn btn-primary'> <i class="fa fa-times" aria-hidden="true"></i> Limpiar Filtro</a>
+		</div>
+		
+		
+		
+		<div class='col-sm-3 form-group'>
+		@can('add_dsc_procesos')
+				<a href="{{ route('disciplinarios.create') }}" class="btn btn-success"><i class="fa fa-plus"></i> Crear Nuevo proceso</a>
+		@endcan
 		</div>
 
 

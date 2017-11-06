@@ -1,7 +1,22 @@
+var parametros = null;
+
 $('document').ready(function(){
+	
+	$('#dsc_filtro_menu').prepend("<option></option>");
+	
+	$('#dsc_filtro_menu').change(function(){
+			
+			var estado = $('#dsc_filtro_menu').val();
+			
+			parametros.data['filter'] = '{"nombreestadoproceso":"'+estado+'"}';
+			//{'search':'','sort':'','limit':'10','offset':'0','order':'asc','filter':'{"nombreestadoproceso":"'+estado+'"}'}};
+			
+			ajaxRequest(parametros);
+	});
 		
 	//Inicializador bootstrap-table
-	$('#tablaDatos').bootstrapTable({
+	$('#table').bootstrapTable({
+		
 	    columns: [
     	{
 	        field: 'actions',
@@ -9,6 +24,9 @@ $('document').ready(function(){
 	    },{
 	        field: 'nombresolicitante',
 	        title: 'Solicitante'
+	    },{
+	        field: 'consecutivo',
+	        title: 'Consecutivo'
 	    }, {
 	        field: 'nombreresponsable',
 	        title: 'Responsable'
@@ -47,6 +65,61 @@ $('document').ready(function(){
 		 
 });
 
+
+
+// funcion Ajax Consulta Personalizada
+
+function ajaxRequest(params){
+	
+	parametros = params;
+	
+	console.log(params.data);
+	
+	var estado = $('#dsc_filtro_menu').val();
+	
+	
+	if(estado !=null ){
+		params.data["nombreestadoproceso"] = estado;
+	}
+	
+	
+	
+	
+	$('#spinner').show();
+	if(params.data['search'] == ''){
+		params.data['search'] = 'undefined';
+	}
+		$.ajax({
+			url: "/dsc_listarprocesos/"+params.data['order']+"/"+params.data['offset']+"/"+params.data['limit']+"/"+params.data['filter']+"/"+params.data['search']+"/"+params.data['nombreestadoproceso'],
+	        type: "GET",
+	        headers : {'X-CSRF-TOKEN': window.Laravel.csrfToken},
+	        contentType: 'application/json; charset=utf-8',
+		    dataType : "json",
+		    
+		    success : function(result) {
+		   	 console.log(result);
+		   	 params.success(result);
+		   	 $('#spinner').hide();
+		   	 
+		    },
+		    error : function(jqXHR, textStatus, errorThrown) {
+		    	$('#spinner').hide();
+		   	 
+		   	 $('#modalHeader').html("Error");
+				 $('#modalBody').html(jqXHR);
+				 $('#myModal').modal('toggle');
+		   	 
+		    },
+
+		    timeout: 60000, 
+		});
+	
+	
+}
+
+
+
+
 //Vista Detail Formater
 
 function detalleRow(index, row) {
@@ -60,9 +133,11 @@ function detalleRow(index, row) {
         
         success: function(result) {
 	       	$('#c'+row.iddsc_procesos).html(result);
+
         },
         error : function(jqXHR, textStatus, errorThrown) {
-        	console.log(textStatus);
+        	console.log(jqXHR);
+
         },
         timeout: 120000,
     });

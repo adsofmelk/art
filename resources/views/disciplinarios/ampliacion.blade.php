@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@include('disciplinarios._menu')
+@include('disciplinarios._menu_noajax')
 
 @section('title', 'Ampliación Proceso Disciplinario')
 @section('desc','Debera adjuntar los soportes requeridos por el analista del proceso')

@@ -22,3 +22,12 @@
         </div>
     </div>
 @endsection
+
+@section('scripts')
+
+<!--  Scripts del Modulo -->	
+
+{!!Html::script("js/signature/signature_pad.js")!!}
+{!!Html::script("/app/js/users.js")!!}
+
+@endsection

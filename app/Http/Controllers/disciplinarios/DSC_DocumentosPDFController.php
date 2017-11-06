@@ -16,79 +16,21 @@ class DSC_DocumentosPDFController extends Controller
 	
 	public function citacionDescargos($id)
 	{
-		$proceso = \App\View_DSC_ListadoprocesosModel::where(['iddsc_procesos'=>$id])->first();
-		$descargos = \App\DSC_ProcesosHasDescargosModel::select([
-				'iddsc_descargos',
-				'dsc_procesos_iddsc_procesos',
-				'iddsc_procesos_has_dsc_descargos',
-				'nombres',
-				'apellidos',
-				'sedes.nombre',
-				'fechaprogramada',
-				'dsc_descargos.created_at as fechanotificacion',
-				
-		])->join('dsc_descargos','iddsc_descargos','=','dsc_descargos_iddsc_descargos')
-		->join('sedes','idsedes','=','sedes_idsedes')
-		->join('personas','idpersonas','=','useranalista_id')
-		->where([
-				'dsc_procesos_iddsc_procesos' => $id,
-				'dsc_procesos_has_dsc_descargos.estado' => true,
-		])->first();
+	    
+	    $proceso = \App\DSC_ProcesosModel::find($id);
+	    if($proceso->dsc_tiposdecisionesevaluacion_iddsc_tiposdecisionesevaluacion == 6){
+	        
+	        $contenido = \App\Helpers::prepararContenidoAbandonoCargoCarta1($id);
+	        
+	    }else{
+	        
+	        $contenido = \App\Helpers::prepararContenidoDocumentoCitacionDescargos($id);
+	        
+	    }
+	    
 		
-		if($descargos){
-			
-			$pruebas = \App\DSC_PruebasModel::join('dsc_estadosprueba','iddsc_estadosprueba','=','dsc_estadosprueba_iddsc_estadosprueba')
-			->where(['dsc_procesos_iddsc_procesos' => $id ])->get();
-			
-			$listadopruebas = '<ol>';
-			
-			foreach ($pruebas as $prueba){
-				if($prueba->dsc_estadosprueba_iddsc_estadosprueba == 2){
-					$listadopruebas.='<li>'.$prueba->descripcion.'</li>';
-				}
-			}
-			$listadopruebas.='</ol>';
-			
-			
-			$plantilla = \App\DSC_PlantillasModel::find(2)->contenido;
-			
-			
-			setlocale(LC_TIME, 'es_CO.UTF-8');
-			
-			$time=strtotime($descargos->fechanotificacion);
-			
-			$month=date("n",$time);
-			$day = strftime('%e',$time);
-			$year = date('Y', $time);
-			
-			
-			$time=strtotime($descargos->fechaprogramada);
-			$pmonth=date("n",$time);
-			$pday = strftime('%e',$time);
-			$pyear = date('Y', $time);
-			$phour = date('g:i a' , $time);
-			
-			
-			
-			$campos = [
-					'{{$dia}}' => $day,
-					'{{$mes}}' => \App\Helpers::numbertoMonth($month),
-					'{{$anio}}'=> $year,
-					'{{$nombreresponsable}}' => $proceso['nombreresponsable'],
-					'{{$echos}}' => $proceso['hechos'],
-					'{{$nivelfalta}}' => $proceso['nombrenivelafectacion'],
-					'{{$cargos}}' => $proceso['nombrefalta'],
-					'{{$pruebas}}' => $listadopruebas,
-					'{{$diacitacion}}' => $pday,
-					'{{$mescitacion}}' => \App\Helpers::numbertoMonth($pmonth),
-					'{{$aniocitacion}}' => $pyear,
-					'{{$horacitacion}}' => $phour,
-					
-			];
-			
-			$contenido = \App\Helpers::remplazarCampos($plantilla, $campos);
-			
-			
+		if($contenido){
+		    		
 			$view =  \View::make('disciplinarios.plantillaspdf._template_documento',[
 					'contenido'=>$contenido,
 			])->render();
@@ -102,6 +44,7 @@ class DSC_DocumentosPDFController extends Controller
 	}
 	
 	
+	
 	public function actaDescargos($id)
 	{
 		
@@ -110,6 +53,7 @@ class DSC_DocumentosPDFController extends Controller
 				'dsc_procesos_iddsc_procesos' => $id
 		])->first()){
 			$descargos = \App\DSC_DescargosModel::find($procesohasdescargos->dsc_descargos_iddsc_descargos);
+			
 			$view =  \View::make('disciplinarios.plantillaspdf._template_documento',[
 					'contenido'=>$descargos->actadescargos,
 			])->render();

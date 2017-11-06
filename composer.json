@@ -10,6 +10,7 @@
         "ckeditor/ckeditor": "^4.7",
         "laracasts/flash": "^3.0",
         "laravel/framework": "5.4.*",
+        "laravel/socialite": "^3.0",
         "laravel/tinker": "~1.0",
         "laravelcollective/html": "^5.3.0",
         "owen-it/laravel-auditing": "^4.0",

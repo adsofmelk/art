@@ -19,7 +19,10 @@ class DSC_DisciplinariosController extends Controller
      */
     public function index()
     {
-        return view('disciplinarios.index',['data_url'=>'/dsc_procesos']);
+    	
+        return view('disciplinarios.index',[
+        		'data_url'=>'/dsc_procesos',
+        ]);
     }
     
     /**
@@ -131,7 +134,8 @@ class DSC_DisciplinariosController extends Controller
      */
     public function edit($id) //EVALUACION DEL PROCESO
     {
-    	$proceso = \App\View_DSC_ListadoprocesosModel::where(['iddsc_procesos'=>$id])->first();
+    	$proceso = \App\Helpers::getInfoProceso($id); 
+    	//\App\View_DSC_ListadoprocesosModel::where(['iddsc_procesos'=>$id])->first();
     	
     	if(($proceso->dsc_estadosproceso_iddsc_estadosproceso != 1)&&($proceso->dsc_estadosproceso_iddsc_estadosproceso != 4)){
     		return redirect('disciplinarios');
@@ -144,15 +148,25 @@ class DSC_DisciplinariosController extends Controller
     	
     	$referenciafalta = \App\DSC_TiposfaltaModel::find($proceso->iddsc_tiposfalta);
     	
-    	$tiposdecisionesevaluacion = \App\DSC_TiposdecisionesevaluacionModel::where('iddsc_tiposdecisionesevaluacion','<',4)
+    	$tiposdecisionesevaluacion = \App\DSC_TiposdecisionesevaluacionModel::where('iddsc_tiposdecisionesevaluacion','!=',4)
+    	        ->where('iddsc_tiposdecisionesevaluacion','!=',5)
 		    	->pluck('nombre','iddsc_tiposdecisionesevaluacion');
     	
     	$tiposmotivoscierre = \App\DSC_TiposmotivoscierreModel::where('iddsc_tiposmotivoscierre','!=',5)->pluck('nombre','iddsc_tiposmotivoscierre');
     	
     	$sedes = \App\SedesModel::orderby('nombre','asc')->pluck('nombre','idsedes');
     	
-    	$analista = \App\View_UsersPersonasModel::select(DB::raw('concat(nombres," ",apellidos) as nombre, idpersonas'))
-    	->pluck('nombre','idpersonas');
+    	$temp = \App\Helpers::getListadoUsuariosActivosConPermisos(['add_descargos','edit_descargos']); 
+    	//\App\View_UsersPersonasModel::select(DB::raw('concat(nombres," ",apellidos) as nombre, idpersonas'))
+    	//->pluck('nombre','idpersonas');
+    	
+    	$analistas = [];
+    	
+    	foreach($temp as $row){
+    	    
+    	    $analistas[$row['idpersonas']] = $row['analista'];
+    	    
+    	}
     	
     	return view('disciplinarios.evaluacion',[
     			'proceso' => $proceso,
@@ -162,7 +176,7 @@ class DSC_DisciplinariosController extends Controller
     			'tiposdecisionesevaluacion' => $tiposdecisionesevaluacion,
     			'tiposmotivoscierre' => $tiposmotivoscierre,
     			'sedes' => $sedes,
-    			'analistas' => $analista,
+    			'analistas' => $analistas,
     	]);
     }
 

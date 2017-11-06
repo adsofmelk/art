@@ -68,6 +68,39 @@
     @if ($errors->has('roles')) <p class="help-block">{{ $errors->first('roles') }}</p> @endif
 </div>
 
+<!-- firma -->
+<div class='col-sm-6 form-group'>
+	<?php 
+	   if(isset($user['firma'])){
+	       $firma = $user['firma'];
+	   }else {
+	       $firma = "";
+	   }
+	?>
+	{!! Form::label('firma', 'Firma') !!}
+	<div class='row'>
+        <div id='firmapng' class='col-sm-6'>
+        	<img src="{!!$firma!!}">
+        </div>
+        {{Form::hidden('firma',$firma,['id'=>'firma'])}}
+        <div id="signature-pad" class="m-signature-pad col-sm-6" style='width:305px;' >
+            <div id='contenedorcanvas' class="m-signature-pad--body" style='border:1px solid #333;'>
+              <canvas></canvas>
+            </div>
+            
+              	<button type="button" class="btn btn-danger" data-action="clear">Limpiar</button>
+                <button type="button" class="btn btn-success" data-action="save-png">Guardar</button>
+                
+              
+            <div class="m-signature-pad--footer">
+              <div class="description">
+              
+              </div>
+            </div>
+    	</div>
+	</div>
+</div>
+
 <!-- estados -->
 <div class="col-lg-6 form-group">
 	{!! Form::label('estado', 'Estado') !!}

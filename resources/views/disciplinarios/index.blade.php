@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('title', 'Procesos Disciplinarios')
+@section('title', 'Disciplinarios')
 
 
 @section('desc', 'Listato General de Procesos Disciplinarios')
@@ -9,16 +9,26 @@
 
 @section('content')
 
+@can('view_dsc_procesos')
+
 
 <div class='row'>
 	<div class='col-sm-12'>
-		<table class='table table-striped' data-toggle="table" data-url="{!!$data_url!!}"  
+		<table class='table table-striped' 
+			   
 			   data-detail-view="true"
 			   data-detail-formatter="detalleRow"
                data-filter-control="true"
-               data-filter-show-clear="true" style='width:100%;' id ='tablaDatos'>
+               data-ajax="ajaxRequest"
+               data-search="true"
+               data-filter-show-clear="true"
+               data-toggle="table"
+	           data-side-pagination="server"
+	           data-pagination="true" 
+               style='width:100%;' id ='table'>
 			<thead>
 				<th data-field="actions">Acciones</th>
+				<th data-field="consecutivo" data-filter-control="select">Consecutivo</th>
 				<th data-field="nombresolicitante" data-filter-control="select">Solicitante</th>
 				<th data-field="nombreresponsable" data-filter-control="select">Responsable</th>
 				<th data-field="respodocumento" data-filter-control="select">Cedula</th>
@@ -37,7 +47,10 @@
 		</table>
 	</div>
 </div>
+@endcan
+
 @endsection
+
 
 
 @section('css')

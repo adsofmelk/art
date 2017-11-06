@@ -1,3 +1,6 @@
+var pruebasactivas = 0;
+
+
 $('document').ready(function(){
 	
 	//desactivar boton de guardado
@@ -6,11 +9,17 @@ $('document').ready(function(){
 	/* BOTON DE AGREGAR PRUEBAS  */
 	$('#contenedor_boton_agregar_pruebas').on('click', '#btn_agregarprueba', function(){
 		 var np = $('#numeropruebas').val() * 1;
-		 $("#contenedor_pruebas").append('<div class="col-lg-12"><strong>Prueba ' + (np + 1) +'</Strong> <input class="form-control" name="prueba_' + np + '" type="file" id="prueba_' + np + '"></div>');
+		 
+		 
+		 
+		 $("#contenedor_pruebas").append('<div class="col-sm-12"><div class="col-sm-12" div id="contenedor_prueba_' + np + '"><div class="col-sm-12"><strong>Prueba ' + (np + 1) +'</Strong></div><div class="col-sm-10"><input class="form-control" name="prueba_' + np + '" type="file" id="prueba_' + np + '"></div><div class="col-sm-2"><input type="button" class="btn btn-danger" onClick="borrarPrueba(' + np + ')" value="X"></div></div><input name="procesarprueba_' + np + '" type="hidden" id="procesarprueba_' + np + '" value="true" ></div>');
+		 //$("#contenedor_pruebas").append('<div class="col-lg-12"><strong>Prueba ' + (np + 1) +'</Strong> <input class="form-control" name="prueba_' + np + '" type="file" id="prueba_' + np + '"></div>');
 		 	
 		 	$('#numeropruebas').val( np + 1);
 		 	
 		 	$('#btn-save').prop('disabled', false);
+		 	
+		 	pruebasactivas++;
 		});
 	/*  /. BOTON DE AGREGAR PRUEBAS*/
 	
@@ -43,17 +52,23 @@ $('document').ready(function(){
 	        		 $('#myModal').modal('toggle');
 	        		 
 	        		 $('#content').empty();
-	        		 $('#content').load('/dsc_procesos/' + result.iddsc_procesos);
+	        		 //$('#content').load('/dsc_procesos/' + result.iddsc_procesos);
+	        		 $('#content').load('/dsc_procesos/' + result.iddsc_procesos, function(){
+	        			 
+	        			 $('#spinner').hide();
+	        			 
+	        		 });
 	        	 }else{
 	        		 console.log(result);
 	        		 $('#modalHeader').html("Error");
 	        		 $('#modalBody').html(result.detalle);
 	        		 $('#myModal').modal('toggle');
 	        		 
-	        		 
 	        		 $('#btn-save').prop('disabled', false);
+	        		 
+	        		 $('#spinner').hide();
 	        	 }
-	        	 $('#spinner').hide();
+	        	 
 	         },
 	         error : function(jqXHR, textStatus, errorThrown) {
 	        	 var errores = '';
@@ -78,3 +93,11 @@ $('document').ready(function(){
 	 
 });
 
+function borrarPrueba(id){
+	$('#contenedor_prueba_'+id).hide();
+	$('#procesarprueba_'+id).val('false');
+	pruebasactivas--;
+	if(pruebasactivas <= 0){
+		$('#btn-save').prop('disabled', true);
+	}
+}

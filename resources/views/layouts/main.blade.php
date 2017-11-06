@@ -35,6 +35,10 @@
 
     <!-- Bootrtrap Switch CSS -->
     {!!Html::style('/css/bootstrap-switch.min.css')!!}
+    
+    
+        <!-- Bootrtrap DateTimePicker CSS -->
+    {!!Html::style('/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css')!!}
 
   <!-- Custom style -->
 

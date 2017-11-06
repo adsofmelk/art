@@ -40,19 +40,19 @@ class DSC_GestionprocesoController extends Controller
      */
     public function store(Request $request)
     {
+    	
     	//return response()->json($request->toArray());
     	
     	$validar = null;
+    	
     	switch($request['dsc_tiposdecisionesevaluacion_iddsc_tiposdecisionesevaluacion']){
     		case '1' : { //CITACION A DESCARGOS
     			$validar = [
-    					'fechadescargos' => 'required',
-    					'horadescargos' => 'required',
-    					'minutodescargos' => 'required',
-    					'jornadadescargos' => 'required',
+    					'fechaprogramada' => 'required',
     					'sedes_idsedes' => 'required',
     					'analista_idpersonas' => 'required',
     					'explicaciondecision' => 'required',
+    			        'hechosverificados' => 'required',
     			];	
     			break;
     		}
@@ -66,6 +66,11 @@ class DSC_GestionprocesoController extends Controller
     					'dsc_tiposmotivoscierre_iddsc_tiposmotivoscierre' => 'required',
     			];
     			break;
+    		}
+    		
+    		case '6' : {//ABANDONO DE CARGO PRIMERA CARTA
+    		    $validar = ['explicaciondecision' => 'required'];
+    		    break;
     		}
     		default : {// NO DEFINIIDO
     			return response()->json([
@@ -149,6 +154,27 @@ class DSC_GestionprocesoController extends Controller
     				break;
     			}
     			
+    			case '6' : { // ABANDONO DE CARGO CARTA 1 
+    			    
+    			    $estadoproceso = 5;  //DESCARGOS
+    			    $tipogestion = 3; //CITACION A DESCARGOS
+    			    
+    			    $datosproceso = [
+    			            'detalleproceso' => $request['explicaciondecision'],
+    			            'retirotemporal' => (isset($request['aprobadoretirotemporal']))?true:false,
+    			            'dsc_tiposdecisionesevaluacion_iddsc_tiposdecisionesevaluacion' => $request['dsc_tiposdecisionesevaluacion_iddsc_tiposdecisionesevaluacion'],
+    			            'dsc_tiposmotivoscierre_iddsc_tiposmotivoscierre' => $request['dsc_tiposmotivoscierre_iddsc_tiposmotivoscierre'],
+    			            'dsc_procesos_iddsc_procesos' => $request['dsc_procesos_iddsc_procesos'],
+    			            'gestor_id' => Auth::user()->id,
+    			            'dsc_estadosproceso_iddsc_estadosproceso' => $estadoproceso,
+    			            'dsc_tipogestion_iddsc_tipogestion' => $tipogestion,
+    			    ];
+    			    
+    			    
+    			    break;
+    			}
+    			
+    			
     		}
     		
     		
@@ -162,9 +188,44 @@ class DSC_GestionprocesoController extends Controller
     		
     		$proceso->retirotemporal = $gestionproceso->retirotemporal;
     		
+    		
+    		
+    		
+    		
+    		if( $estadoproceso == 5){
+    		    
+    		    $proceso->hechosverificados = trim($request['hechosverificados']);
+    		    
+    		    $proceso->reglamentointerno= trim($request['reglamentointerno']);
+    		    
+    		    $proceso->codigodeetica= trim($request['codigodeetica']);
+    		    
+    		    $proceso->contratoindividualdetrabajo= trim($request['contratoindividualdetrabajo']);
+    		    
+    		    
+    		    
+    		}
+    		
+    		
+    		///ACTUALIZAR TIPO DE DESICION DE EVALUACION
+    		
+    		$proceso->dsc_tiposdecisionesevaluacion_iddsc_tiposdecisionesevaluacion = $request['dsc_tiposdecisionesevaluacion_iddsc_tiposdecisionesevaluacion'];
+    		
+    		
+    		//GUARDAR CAMBIOS EN EL PROCESO
+    		
     		$proceso->save();
     		
     		
+    		/*
+    		//Enviar correo informando estado del proceso
+    		$destinatario = \App\PersonasModel::find($proceso->solicitante_id);
+    		
+    		if(sizeof($destinatario->email) > 0){
+    			\App\Helpers::enviarCorreo(['to'=>$destinatario->email,'subject'=>'']);
+    		}
+    		
+    		*/
     		
     		//Actualizar los estados de las pruebas (se usa en los 3 casos)
     		
@@ -190,24 +251,26 @@ class DSC_GestionprocesoController extends Controller
     		
     		
     		//PROGRAMAR CITACION A DESCARGOS
-    		if($request['dsc_tiposdecisionesevaluacion_iddsc_tiposdecisionesevaluacion']==1){
+    		if($request['dsc_tiposdecisionesevaluacion_iddsc_tiposdecisionesevaluacion']==1 || 
+    		        $request['dsc_tiposdecisionesevaluacion_iddsc_tiposdecisionesevaluacion']== 6){
     			
-    			if(isset($request['jornadadescargos'])){
-    				$request['horadescargos'] = (($request['horadescargos'] + 12)<24)? $request['horadescargos'] + 12: 00;
+    			$analistaid = \App\Helpers::getIdUsuarioFromPersonaId($request['analista_idpersonas']);
+    			
+    			
+    			if(!$analistaid){
+    			    $analistaid = \App\Helpers::getUsuario();
     			}
-    			$fechaprogramada= $request['fechadescargos'] . " " . $request['horadescargos'].":". $request['minutodescargos'];
-    			
-    			
-    			
     			
     			$descargos = \App\DSC_DescargosModel::create([
-    					'fechaprogramada'=> $fechaprogramada,
-    					'useranalista_id'=> $request['analista_idpersonas'],
+    			        'fechaprogramada'=> $request['fechaprogramada'],
+    			        'userevaluador_id' => Auth::user()['id'],
+    					'useranalista_id'=> $analistaid,
     					'sedes_idsedes' => $request['sedes_idsedes'],
     					'dsc_estadosproceso_iddsc_estadosproceso' => $estadoproceso,
     					'dsc_tipogestion_iddsc_tipogestion' => $tipogestion,
     			]);
     			
+    			    			
     			
     			if($descargos){
     				
@@ -217,13 +280,22 @@ class DSC_GestionprocesoController extends Controller
     						'dsc_descargos_iddsc_descargos' => $descargos->iddsc_descargos,
     				]);
     				
+    				$enviarcitaciondescargos = true;
+    				
+    			}else{
+    			     
+    			    return response()->json([
+    			            'estado' => false,
+    			            'detalle' => "No pudo generarse Proces-has-descargos",
+    			    ]);
+    			    
     			}
     			
-    			// /. PROGRAMAR CITACION A DESCARGOS
+    			
     			
     		}
     		
-    		
+    		// /. PROGRAMAR CITACION A DESCARGOS
     			
     		DB::commit();
     			
@@ -237,6 +309,49 @@ class DSC_GestionprocesoController extends Controller
     				'detalle' => "Problemas al guardar evaluacion",
     		]);
     	}
+    	
+    	
+    	
+    	
+    	
+    	//ENVIO DE CORREOS
+    	
+    	
+    	switch($request['dsc_tiposdecisionesevaluacion_iddsc_tiposdecisionesevaluacion']){
+    		case '1':{//CITACION A DESCARGOS
+    			//ENVIAR CORREO DE CITACION A DESCARGOS AL RESPONSABLE
+    			\App\Helpers::emailCitacionDescargos($proceso->iddsc_procesos);
+    			
+    			//ENVIAR CORREO DE NOTIFICACION SOBRE ESTADO DEL PROCESO
+    			\App\Helpers::emailInformarEstadoProceso($proceso->iddsc_procesos);
+    			break;
+    		}
+    		
+    		case '2':{//AMPLIACION DE PRUEBAS
+    			//ENVIAR CORREO DE NOTIFICACION SOBRE ESTADO DEL PROCESO
+    		    \App\Helpers::emailInformarEstadoProceso($proceso->iddsc_procesos, $request['explicaciondecision']);
+    			
+    			break;
+    		}
+    		
+    		case '3':{ //CIERRE DEL PROCESO
+    			//ENVIAR CORREO DE NOTIFICACION AL SOLICITANTE SOBRE CIERRE DEL PROCESO
+    			\App\Helpers::emailInformarCierreProceso($proceso->iddsc_procesos);
+    			break;
+    		}
+    		
+    		case '6':{//CITACION A DESCARGOS
+    		    //ENVIAR CORREO DE CITACION A DESCARGOS AL RESPONSABLE
+    		    \App\Helpers::emailAbandonoCargoCarta1($proceso->iddsc_procesos);
+    		    
+    		    //ENVIAR CORREO DE NOTIFICACION SOBRE ESTADO DEL PROCESO
+    		    \App\Helpers::emailInformarEstadoProceso($proceso->iddsc_procesos);
+    		    break;
+    		}
+    		
+    	}
+    	
+    	
     	
         return response()->json([
         		'estado' => true,

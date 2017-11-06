@@ -88,8 +88,14 @@
 		  		
 		  		<div class='col-sm-12 form-group' style='margin-top:20px;'>
 			  		{{Form::label('explicaciondecision','Explicación de la decisión')}}<br>
-			  		{{Form::textarea('explicaciondecision',null,['class'=>'form-control', 'id'=>'explicaciondecision','placeholder'=>'Ingrese el detalle de la decisión'])}}
+			  		{{Form::textarea('explicaciondecision',null,['id'=>'explicaciondecision','class'=>'form-control'])}}
+			  		
+			  		<!-- <div id='contenedorexplicaciondecision'>
+			  			
+			  		</div> -->
+			  		
 			  	</div>
+			  	
 			  	
 			  	<div class='col-sm-12 form-group resultadoevaluacion' id='ld_aprobarretiro' style='display:none;'>
 			  		{!! Form::label('retiro', 'Aprobar Retiro Temporal') !!}<br>
@@ -118,29 +124,16 @@
 			  		<div class="panel panel-default"><!-- Panel Validacion Pruebas -->
 					  <div class="panel-heading">DATOS DE LA CITACIÓN</div>
 					  <div class="panel-body">
-					  	<div class='col-sm-12' >
-					  		<div class='col-sm-12  form-group'>
-					  			{!! Form::label('fecha', 'Fecha citación') !!}<br>
-					  			{!!Form::date('fechadescargos',null,['class' => 'form-control'])!!}
-					  		</div>
-						  	
-					  		<div class='form-group'>
-						  		<div class='col-sm-2' >
-						  			{!! Form::label('hora', 'Hora') !!}
-						  		</div>
-						  		
-						  		<div class='col-sm-3' >
-						  			{!!Form::select('horadescargos',range(1,12),null,['class' => 'form-control'])!!}
-						  		</div>
-						  		<div class='col-sm-1' ><strong> : </strong></div> 
-						  		<div class='col-sm-3' >
-						  			{!!Form::select('minutodescargos',range(0,45,15),null,['class' => 'form-control'])!!}
-						  	    </div>
-						  	    <div class='col-sm-3' >
-						  			 {!!Form::select('jornadadescargos',['am','pm'],null,['class' => 'form-control'])!!}
-						  		</div>
-					  		</div>
+					  	<div class='col-sm-12 form-group input-append date form_datetime' >
+					  	
+					  		<!-- FECHA PROGRAMADA -->
+					  	
+					  		{!! Form::label('fechaprogramada', 'Fecha y hora') !!}<br>
 					  		
+                        	<input  name="fechaprogramada" id = "fechaprogramada" size="16" type="text" value="" readonly>
+                        	<span  class="add-on"><i class="fa fa-calendar" aria-hidden="true"></i></span>	
+                            <!-- FIN FECHA PROGRAMADA -->
+
 				  		</div>
 				  		<div class='col-sm-12 form-group' style='margin-top:20px;'>
 						  	{!! Form::label('lugar', 'Lugar (Sede)') !!}<br>
@@ -156,8 +149,6 @@
 				  		</div>
 					  </div>
 					</div>
-			  	</div>
-			  	
 	
 		    </div>
 		  
@@ -165,6 +156,65 @@
 	    </div><!-- /. Panel Acciones a Tomar -->
 	    
     </div>
+	
+	<div class='col-sm-12' style='display:none;' id='ld_datosdocumentocitacion'>
+		<div class="panel panel-default" ><!-- Panel DOCUMENTOS DE CITACION -->
+		  <div class="panel-heading">DATOS DEL DOCUMENTO DE CITACIÓN</div>
+		  <div class="panel-body">
+		  
+		  
+		  <!--  DETALLE DE LOS HECHOS PARA EL CORREO -->
+		  	<div class='col-sm-6 form-group' style='margin-top:20px;'>
+		  		{{Form::label('redaccionhechos','Revisión del detalle de los hechos:')}}<br>
+		  		<textarea id="hechosverificados" name="hechosverificados" 
+				  rows="4" class="form-control ckeditor" >
+				  {!!$proceso->hechos!!}
+				</textarea>
+		  		
+		  		
+		  	</div>
+		  	<!--  FIN DETALLE DE LOS HECHOS PARA EL CORREO -->
+		  	
+		  	
+		  	<!--  DETALLE DE INCUMPLIMIENTO DE REGLAMENTO INTERNO PARA EL CORREO -->
+		  	<div class='col-sm-6 form-group' style='margin-top:20px;'>
+		  		{{Form::label('reglamentointerno','Incumplimiento del reglamento interno de trabajo:')}}<br>
+		  		<textarea id="reglamentointerno" name="reglamentointerno" 
+				  rows="4" class="form-control ckeditor" >
+				</textarea>
+		  		
+		  	</div>
+		  	<!--  FIN DETALLE DE INCUMPLIMIENTO DE REGLAMENTO INTERNO PARA EL CORREO -->
+		  	
+		  	
+		  	<!--  DETALLE DE INCUMPLIMIENTO DE CODIGO DE ETICA -->
+		  	<div class='col-sm-6 form-group' style='margin-top:20px;'>
+		  		{{Form::label('codigodeetica','Incumplimiento del Código de Ética:')}}<br>
+		  		<textarea id="codigodeetica" name="codigodeetica" 
+				  rows="4" class="form-control ckeditor" >
+				</textarea>
+		  		
+		  		
+		  	</div>
+		  	<!--  FIN DETALLE DE INCUMPLIMIENTO DE CODIGO DE ETICA -->
+		  	
+		  	<!--  DETALLE DE INCUMPLIMIENTO DE CONTRATO INDIVIDUAL DE TRABAJO -->
+		  	<div class='col-sm-6 form-group' style='margin-top:20px;'>
+		  		{{Form::label('contratoindividualdetrabajo','Incumplimiento del contrato individual de trabajo:')}}<br>
+		  		<textarea id="contratoindividualdetrabajo" name="contratoindividualdetrabajo" 
+				  rows="4" class="form-control ckeditor" >
+				</textarea>
+		  		
+		  		
+		  	</div>
+		  	<!--  FIN DETALLE DE INCUMPLIMIENTO DE CONTRATO INDIVIDUAL DE TRABAJO -->
+		  	
+		  	
+		  	
+		  </div>
+		</div>
+	</div>
+	
 	{!!Form::hidden('dsc_procesos_iddsc_procesos',$proceso->iddsc_procesos)!!}
 		
 </div>

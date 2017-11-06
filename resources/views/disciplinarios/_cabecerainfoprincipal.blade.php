@@ -9,11 +9,16 @@
 	  	$dias = $interval->format('%d');
   	?>
   	
-  	<div class='col-sm-12' style='background:#eee;padding: 10px; border:1px solid #999;margin: 0 0 20px 0;'>
+  	
+  	
+  	<div class='col-sm-12' style='background:#eee;padding: 5px; border:1px solid #999;margin: 0 0 20px 0;'>
+  		<div class='col-sm-1'>
+      		<strong><big>{{$proceso->consecutivo}}</big></strong>
+      	</div>
   		<div class='col-sm-2'><strong>Fecha Creado:</strong><br>{{$proceso->fechacreacion}}</div>
   		<div class='col-sm-2'><strong>Conocimiento:</strong><br>{{$proceso->fechaconocimiento}}</div>
 		<div class='col-sm-2'><strong>Fecha etapa:</strong><br>{{$proceso->fechaetapa}}</div>
-		<div class='col-sm-2'><strong>Días etapa:</strong><br>{{$dias}}</div>
+		<div class='col-sm-1'><strong>Días etapa:</strong><br>{{$dias}}</div>
 		<div class='col-sm-2'><strong>Retiro de Operacion:</strong><br>{{($proceso->retirotemporal)?'Si':'No'}}</div>
 		<div class='col-sm-2'><strong>Estado:</strong><br>{{$proceso->nombreestadoproceso}}</div>
   	</div>
@@ -27,7 +32,7 @@
 			<div class='col-sm-6'><strong>CentroCosto</strong><br>{{$proceso->responombrecentroscosto}}</div>
 			<div class='col-sm-6'><strong>SubCentroCosto</strong><br>{{$proceso->responombresubcentroscosto}}</div>
 			<div class='col-sm-6'><strong>Sede</strong><br>{{$proceso->responombresede}}</div>
-			<div class='col-sm-6'><strong>Cargo</strong><br>{{$proceso->responombrecargo}}.</div>
+			<div class='col-sm-6'><strong>Cargo</strong><br>{{$proceso->respocargo}}.</div>
 			<div class='col-sm-6'><strong>Campaña</strong><br>{{$proceso->responombrecampania}}.</div>
 			<div class='col-sm-6'><strong>Grupo</strong><br>{{$proceso->responombregrupo}}.</div>	  
 		  </div>

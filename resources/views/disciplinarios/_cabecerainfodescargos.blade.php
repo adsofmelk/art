@@ -27,19 +27,48 @@
 					<td>
 						<a href='/pdfcitaciondescargos/{{$descargo["dsc_procesos_iddsc_procesos"]}}' target='_blank' class='btn btn-default'>Ver Documento</a>
 					</td>
+					
 					<?php 
 						switch($proceso['dsc_estadosproceso_iddsc_estadosproceso']){
 							case '8':{
-								echo  "<td>
-										<a href='/actadescargos/" . $descargo['dsc_procesos_iddsc_procesos'] . "/edit' class='btn btn-default'>Generar Acta Descargos</a>
-										</td>
-										<td></td>";
+							    
+							    if(Auth::user()->can('add_actadescargos')){
+							        
+							        echo  "<td>";
+							        
+							        echo \App\Helpers::generarBotonVinculoProceso($descargo['dsc_procesos_iddsc_procesos'], $proceso['dsc_estadosproceso_iddsc_estadosproceso']);
+							        
+    								echo "</td>
+    										<td>
+                                            </td>";
+							    }else{
+							        echo "<td></td".
+							             "<td></td>";
+							    }
+								
+							    
 								break;
 							}
 							
 							case '9':{
-								echo "<td><a href='/pdfactadescargos/" . $descargo['dsc_procesos_iddsc_procesos'] . "' target='_blank' class='btn btn-default'>Ver Documento</a></td>".
-									 "<td><a href='/fallos/" . $descargo['dsc_procesos_iddsc_procesos'] . "' class='btn btn-default'>Generar Fallo</a></td>";
+							    if(Auth::user()->can('view_actadescargos')){
+							        echo "<td><a href='/pdfactadescargos/" . $descargo['dsc_procesos_iddsc_procesos'] . "' target='_blank' class='btn btn-default'>Ver Documento</a></td>";
+							    }else{
+							        echo "<td></td>";
+							    }
+							    
+							    if(Auth::user()->can('add_dsc_fallosprocesos')){
+							        echo "<td>";
+							        
+							        echo \App\Helpers::generarBotonVinculoProceso($descargo['dsc_procesos_iddsc_procesos'], $proceso['dsc_estadosproceso_iddsc_estadosproceso']);
+							        
+							        echo "</td>";
+							        
+							    }else{
+							        echo "<td></td>";
+							    }
+								
+							    
 								break;
 							}
 							

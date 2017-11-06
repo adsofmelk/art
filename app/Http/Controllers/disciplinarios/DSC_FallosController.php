@@ -21,7 +21,9 @@ class DSC_FallosController extends Controller
     public function index()
     {
     	$procesos = \App\View_DSC_ListadoprocesosModel::where(['dsc_estadosproceso_iddsc_estadosproceso' => 7])
+    	->orderby('fechaetapa','DESC')
     	->get()->toArray();
+    	
     	foreach($procesos as $key => $val){
     		
     		$procesos[$key]['actions'] =\App\Helpers::generarBotonVinculoProceso($val['iddsc_procesos'], $val['dsc_estadosproceso_iddsc_estadosproceso']);
@@ -65,7 +67,7 @@ class DSC_FallosController extends Controller
     public function store(Request $request)
     {
     	
-    	
+    	$me = Auth::user();
     	$respuesta = [
     			
     			'estado' => false,
@@ -74,12 +76,40 @@ class DSC_FallosController extends Controller
     	
     	if(isset($request['fallofinal'])){ //FALLO FINAL (DESPUES DE PROCESO DE DESCARGOS) 
     		
-    		if(self::generarFalloFinal($request)){
-    			$respuesta['detalle'] = "Fallo final generado";
+    	    $resultado = false;
+    	    
+    	    if($me->hasRole('Gerente de Relaciones Laborales')){
+    	        
+    	        $resultado = self::generarFalloFinal($request);
+    	        
+    	    }else if($me->hasRole('Analista de Relaciones Laborales') && ($request['dsc_tiposdecisionesproceso_iddsc_tiposdecisionesproceso'] != 2) ){
+    	        
+    	        $resultado = self::generarFalloFinal($request);
+    	        
+    	    }else if($me->hasRole('Analista de Relaciones Laborales') ){
+    	        
+    	        $resultado = self::generarFalloFinal($request,true);
+    	    }
+    	    
+    		if($resultado){
+    			$respuesta['detalle'] = "Fallo generado";
     			$respuesta['estado'] = true;
+    			
+    			//ENVIAR CORREO AL IMPLICADO SOLO CUANDO EL FALLO NO ES TERMINACION JUSTA CAUSA
+    			if($request['dsc_tiposdecisionesproceso_iddsc_tiposdecisionesproceso'] != 2) { 
+    			    
+    			    //ENVIAR CORREO DE FALLO FINAL A RESPONSABLE
+    			    \App\Helpers::emailFalloFinal($request['dsc_procesos_iddsc_procesos']);
+    			    
+    			}
+    			
+    			//ENVIAR CORREO DE NOTIFICACION SOBRE ESTADO DEL PROCESO
+    			\App\Helpers::emailInformarEstadoProceso($request['dsc_procesos_iddsc_procesos']);
+    			
+    			
     		}else{
     		
-    			$respuesta['detalle'] = "Error Generando Fallo Final";
+    			$respuesta['detalle'] = "Error Generando Fallo";
     		}
     	}else{
     		
@@ -89,6 +119,10 @@ class DSC_FallosController extends Controller
     				
     				$respuesta['detalle'] = "Diligencia de descargos finalizada";
     				$respuesta['estado'] = true;
+    				
+    				//ENVIAR CORREO DE NOTIFICACION SOBRE ESTADO DEL PROCESO
+    				\App\Helpers::emailInformarEstadoProceso($request['dsc_procesos_iddsc_procesos']);
+    				
     				
     			}else{
     				
@@ -108,6 +142,15 @@ class DSC_FallosController extends Controller
     					$respuesta['detalle'] = 'Nueva citación generada';
     					$respuesta['estado'] = true;
     					
+    					//ENVIAR CORREO DE NOTIFICACION SOBRE ESTADO DEL PROCESO
+    					\App\Helpers::emailInformarEstadoProceso($request['dsc_procesos_iddsc_procesos']);
+    					
+    					
+    						
+    					//ENVIAR CORREO DE CITACION A DESCARGOS AL RESPONSABLE
+    					\App\Helpers::emailCitacionDescargos($request['dsc_procesos_iddsc_procesos']);
+    					
+    					
     				}else{
     					
     					$respuesta['detalle'] = 'No pudo generarse una nueva citación';
@@ -115,17 +158,47 @@ class DSC_FallosController extends Controller
     				}
     				
     			}else{ //NO REPROGRAMAR Y GENERAR FALLO
+    			    
+    			    if($request['dsc_tiposdecisionesproceso_iddsc_tiposdecisionesproceso'] == 8){
+    			        
+    			        $fallo = self::generarFalloFinal($request);
+    			        
+    			        
+    			    }else{
+    			        $fallo = self::generarFallo($request);
+    			    }
     				
-    				if(self::generarFallo($request)){
+    				if($fallo){
     					
     					$respuesta['detalle'] = 'Fallo generado';
     					$respuesta['estado'] = true;
+    					
+    					//ENVIAR CORREO DE NOTIFICACION SOBRE ESTADO DEL PROCESO
+    					\App\Helpers::emailInformarEstadoProceso($request['dsc_procesos_iddsc_procesos']);
     					
     				}else{
     					
     					$respuesta['detalle'] = 'No pudo generarse un fallo';
     					
     				}
+    				
+    				if($request['dsc_tiposdecisionesproceso_iddsc_tiposdecisionesproceso'] != 2){ // CUANDO NO ES TERMINACION CONTRATO JUSTA CAUSA
+    			
+    				    if($request['dsc_tiposdecisionesproceso_iddsc_tiposdecisionesproceso'] == 8){
+    				        
+    				        //ENVIAR CORREO RENUNCIA TACITA
+    				        \App\Helpers::emailAbandonoCargoCarta2($request['dsc_procesos_iddsc_procesos']);
+    				        
+    				    }else{
+    				        
+    				        //ENVIAR CORREO DE FALLO FINAL A RESPONSABLE
+    				        \App\Helpers::emailFalloAusenteDescargos($request['dsc_procesos_iddsc_procesos']);
+    				        
+    				    }
+    					
+    				}
+    				
+    				
     			}
     		}
     		
@@ -148,12 +221,17 @@ class DSC_FallosController extends Controller
     
     public function editarFallo($id){
     	
-    	$proceso = \App\View_DSC_ListadoprocesosModel::where(['iddsc_procesos'=>$id])->first();
+    	$proceso = \App\Helpers::getInfoProceso($id); 
+    	//\App\View_DSC_ListadoprocesosModel::where(['iddsc_procesos'=>$id])->first();
     	
     	if($proceso->dsc_estadosproceso_iddsc_estadosproceso != 6){
     		return redirect('disciplinarios');
     	}
     	
+    	$descargos = \App\Helpers::getInfoDescargos($id);
+    	$descargos = $descargos[0];
+    	
+    	/*
     	$descargos = \App\DSC_ProcesosHasDescargosModel::select([
     			'iddsc_descargos',
     			'dsc_procesos_iddsc_procesos',
@@ -171,6 +249,8 @@ class DSC_FallosController extends Controller
     			'dsc_procesos_iddsc_procesos' => $id,
     			'dsc_procesos_has_dsc_descargos.estado' => true,
     	])->first();
+    	*/
+    	
     	
     	$detallefallo = \App\DSC_DescargosModel::find($descargos->iddsc_descargos);
     	
@@ -259,7 +339,7 @@ class DSC_FallosController extends Controller
 
     			$descargos->dsc_estadosproceso_iddsc_estadosproceso = $estadoproceso;
     			$descargos->iniciodiligencia = $request['iniciodiligencia'];
-    			$descargos->findiligencia = date('Y-m-d h:i:s');
+    			$descargos->findiligencia = date('Y-m-d G:i:s');
     			$descargos->asistio = true;
     			$descargos->userdiligencio_id = Auth::user()->id;
     			$descargos->save();
@@ -276,7 +356,7 @@ class DSC_FallosController extends Controller
     					'dsc_estadosproceso_iddsc_estadosproceso' => $estadoproceso,
     					'dsc_tipogestion_iddsc_tipogestion' => 4,
     					'detalleproceso' => 'Descargos realizados.',
-    					'retirotemporal' => $proceso->retirotemporal,
+    			        'retirotemporal' => ($proceso->retirotemporal != null)?$proceso->retirotemporal:0,
     			]);
 
     		}else{
@@ -328,9 +408,10 @@ class DSC_FallosController extends Controller
 
     			$descargos->dsc_estadosproceso_iddsc_estadosproceso = $estadoproceso;
     			$descargos->iniciodiligencia = $request['iniciodiligencia'];
-    			$descargos->findiligencia = date('Y-m-d h:i:s');
+    			$descargos->findiligencia = date('Y-m-d G:i:s');
     			$descargos->asistio = false;
     			$descargos->textodelfallo = $request['observacionesausencia'];
+    			$descargos->fechassancion = $request['fechassancion'];
     			$descargos->userdiligencio_id = Auth::user()->id;
     			$descargos->userfallo_id = Auth::user()->id;
     			$descargos->dsc_tiposdecisionesproceso_iddsc_tiposdecisionesproceso = $request['dsc_tiposdecisionesproceso_iddsc_tiposdecisionesproceso'];
@@ -371,15 +452,25 @@ class DSC_FallosController extends Controller
     }
     
     
-    private  function generarFalloFinal($request){
+    
+    private  function generarFalloFinal($request,$esanalista = false){
     	
     	$return = true;
-    	$validar = [
-    			'textodelfallo' => 'required',
-    			'iddsc_descargos' => 'required',
-    			'dsc_procesos_iddsc_procesos' => 'required',
-    			'dsc_tiposdecisionesproceso_iddsc_tiposdecisionesproceso' => 'required',
-    	];
+    	if($request['dsc_tiposdecisionesproceso_iddsc_tiposdecisionesproceso'] == '8'){ //RENUNCIA TACITA
+    	    $validar = [
+    	            'iddsc_descargos' => 'required',
+    	            'dsc_procesos_iddsc_procesos' => 'required',
+    	            'dsc_tiposdecisionesproceso_iddsc_tiposdecisionesproceso' => 'required',
+    	    ];
+    	}else{
+    	    $validar = [
+    	            'textodelfallo' => 'required',
+    	            'iddsc_descargos' => 'required',
+    	            'dsc_procesos_iddsc_procesos' => 'required',
+    	            'dsc_tiposdecisionesproceso_iddsc_tiposdecisionesproceso' => 'required',
+    	    ];
+    	}
+    	
     	
     	$this->validate($request, $validar);
     	
@@ -390,36 +481,195 @@ class DSC_FallosController extends Controller
     		
     		if($descargos = \App\DSC_DescargosModel::find($request['iddsc_descargos'])){
     			
-    			
+    		    $proceso = \App\DSC_ProcesosModel::find($request['dsc_procesos_iddsc_procesos']);
     			$descargos->textodelfallo = $request['textodelfallo'];
     			$descargos->dsc_tiposdecisionesproceso_iddsc_tiposdecisionesproceso = $request['dsc_tiposdecisionesproceso_iddsc_tiposdecisionesproceso'];
     			$descargos->userfallo_id = Auth::user()->id;
+    			$descargos->fechassancion = $request['fechassancion'];
+    			$descargos->firmaanalistafallo = $request['firmaanalistafallo'];
+    			
+    			$analista = \App\Helpers::getUsuario();
+    			
+    			$implicado = \App\PersonasModel::find($proceso->responsable_id);
+    			
+    			
+
+    			if($descargos->dsc_tiposdecisionesproceso_iddsc_tiposdecisionesproceso == '8'){    			
+    			    
+    			    ///FALLO RENUNCIA TACITA
+    			    $plantilla = \App\DSC_PlantillasModel::find(3);
+    			    
+    			    $request['fechassancion'] = \App\Helpers::getMenorFechaFaltas($request['dsc_procesos_iddsc_procesos'])['fecha'];
+    			    
+    			    $fechafalta = strtotime($request['fechassancion']);
+    			    
+    			    
+    			    $campos = [
+    			            '{{$anio}}'=> date('Y'),
+    			            '{{$mes}}'=> \App\Helpers::numbertoMonth(date('n')),
+    			            '{{$dia}}' => date('d'),
+    			            '{{$nombreresponsable}}' => $implicado->nombres . " ". $implicado->apellidos,
+    			            '{{$diafalta}}' => date('d',$fechafalta),
+    			            '{{$mesfalta}}' => \App\Helpers::numbertoMonth(date('n',$fechafalta)),
+    			            '{{$aniofalta}}' => date('Y', $fechafalta),
+    			            
+    			            
+    			    ];
+    			    
+    			    
+    			    $descargos->textodelfallo = \App\Helpers::cargarPlantilla(3, $campos);
+    			    /// FIN FALLO RENUNCIA TACITA
+    			    
+    			    
+    			}else{
+    			    
+    			    $plantillafirmas = \App\DSC_PlantillasModel::find(16)->contenido;
+    			    
+    			    
+    			    
+    			    
+    			    if(isset($request['aceptafallo'])){
+    			        
+    			        $descargos->aceptafallo = true;
+    			        $descargos->firmaimplicadofallo = $request['firmaimplicadofallo'];
+    			        
+    			        $datosfirmas = [
+    			                '{{$firmaanalista}}' => '<img src="'.$request['firmaanalistafallo'].'" style="width:300px;"><br>___________________________',
+    			                '{{$nombreanalista}}' => $analista->nombres . " " . $analista->apellidos,
+    			                '{{$documentoanalista}}' => "CC. ".$analista->documento,
+    			                '{{$firmaimplicado}}' => '<img src="'.$request['firmaimplicadofallo'].'" style="width:300px;"><br>___________________________',
+    			                '{{$nombreimplicado}}' => $implicado->nombres . " ". $implicado->apellidos,
+    			                '{{$documentoimplicado}}' => $implicado->documento,
+    			                '{{$firmatestigo1}}' => '',
+    			                '{{$nombretestigo1}}'  => '',
+    			                '{{$documentotestigo1}}'  => '',
+    			                '{{$firmatestigo2}}'  => '',
+    			                '{{$nombretestigo2}}'  => '',
+    			                '{{$documentotestigo2}}'  => '',
+    			                '{{$firmatestigo3}}'  => '',
+    			                '{{$nombretestigo3}}' => '',
+    			                '{{$documentotestigo3}}' => '',
+    			        ];
+    			        
+    			    }else{
+    			        $descargos->aceptafallo = false;
+    			        
+    			        $descargos->fallotestigo1nombre = $request['fallotestigo1nombre'];
+    			        $descargos->fallotestigo1documento = $request['fallotestigo1documento'];
+    			        $descargos->fallotestigo1firma = $request['fallotestigo1firma'];
+    			        
+    			        $descargos->fallotestigo2nombre = $request['fallotestigo2nombre'];
+    			        $descargos->fallotestigo2documento = $request['fallotestigo2documento'];
+    			        $descargos->fallotestigo2firma = $request['fallotestigo2firma'];
+    			        
+    			        
+    			        $datosfirmas = [
+    			                '{{$firmaanalista}}' => '<img src="'.$request['firmaanalistafallo'].'"  style="width:300px;"><br>___________________________',
+    			                '{{$nombreanalista}}' => $analista->nombres . " " . $analista->apellidos,
+    			                '{{$documentoanalista}}' => "CC. ".$analista->documento,
+    			                '{{$firmaimplicado}}' => '<img src="'.$request['firmaimplicadofallo'].'" style="width:300px;"><br>___________________________',
+    			                '{{$nombreimplicado}}' => $implicado->nombres . " ". $implicado->apellidos,
+    			                '{{$documentoimplicado}}' => $implicado->documento,
+    			                '{{$firmatestigo1}}' => '<img src="'.$request['fallotestigo1firma'].'" style="width:300px;"><br>___________________________',
+    			                '{{$nombretestigo1}}'  => $request['fallotestigo1nombre'],
+    			                '{{$documentotestigo1}}'  => ((sizeof($request['fallotestigo1documento']) > 0 )?'CC. '. $request['fallotestigo1documento']:'')."<br><strong>Testigo</strong>",
+    			                '{{$firmatestigo2}}'  => '<img src="'.$request['fallotestigo2firma'].'" style="width:300px;"><br>___________________________',
+    			                '{{$nombretestigo2}}'  => $request['fallotestigo2nombre'],
+    			                '{{$documentotestigo2}}'  => ((sizeof($request['fallotestigo2documento']) > 0 )?'CC. '. $request['fallotestigo2documento']:'')."<br><strong>Testigo</strong>",
+    			                '{{$firmatestigo3}}'  => '',
+    			                '{{$nombretestigo3}}' => '',
+    			                '{{$documentotestigo3}}' => '',
+    			        ];
+    			    }
+    			    
+    			    
+    			    $descargos->textodelfallo = $descargos->textodelfallo. \App\Helpers::cargarPlantilla(16, $datosfirmas);
+    			        
+    			}
+    			
+    			
+    			/////
+    			
+    			
     			$descargos->save();
     			
-    			$proceso = \App\DSC_ProcesosModel::find($request['dsc_procesos_iddsc_procesos']);
-    			$proceso->dsc_estadosproceso_iddsc_estadosproceso = 7; //Fallo generado
+    			
+    			$proceso->dsc_estadosproceso_iddsc_estadosproceso = ($esanalista)?6:7; //Fallo generado
     			$proceso->save();
     			
     			
     			\App\DSC_GestionprocesoModel::create([
-    					'retirotemporal' => $proceso->retirotemporal,
+    			        'retirotemporal' => ($proceso->retirotemporal !=null)?  $proceso->retirotemporal:0,
     					'detalleproceso' => "Generado fallo final",
     					'dsc_tiposdecisionesevaluacion_iddsc_tiposdecisionesevaluacion' => 4,
     					'dsc_tiposmotivoscierre_iddsc_tiposmotivoscierre' => 5,
     					'dsc_procesos_iddsc_procesos' => $request['dsc_procesos_iddsc_procesos'],
     					'gestor_id' => Auth::user()->id,
-    					'dsc_estadosproceso_iddsc_estadosproceso' => 7,
+    			        'dsc_estadosproceso_iddsc_estadosproceso' => ($esanalista)?6:7,
     					'dsc_tipogestion_iddsc_tipogestion' => 4,
     			]);
+    			
+    			
+    			
     			
     		}else{
     			$return = false;
     			DB::rollBack();
     		}
     		
+    		
+    		
+    		
+    		///GENERAR NOVEDAD DE RETIRO EN MRCHISPA
+    		
+    		if($request['dsc_tiposdecisionesproceso_iddsc_tiposdecisionesproceso'] == 2 || $request['dsc_tiposdecisionesproceso_iddsc_tiposdecisionesproceso'] == 8){
+    		    
+    		    
+    		    
+    		    $responsable = \App\PersonasModel::find($proceso->responsable_id);
+    		    
+    		    
+    		    $mrchisparesponsable = \App\MrChispaContratacionesModel::where(['cedula' => $responsable->documento])->first();
+    		    
+    		    
+    		    $analista  = \App\View_UsersPersonasModel::where(['idusers'=> Auth::user()->id])->first();
+    		    
+    		    $mrchispaanalista = \App\MrChispaContratacionesModel::where(['cedula' => $analista->documento])->first();
+    		    
+    		    $fechasancion = substr($request['fechassancion'], 0 ,10);
+    		    
+    		    $numero = \App\MrChispaNovedadesPersonalModel::select(DB::raw('max(numero) as numero'))->first();
+    		    
+    		    $parametros = [
+    		            'date_entered' => date('Y-m-d G:i:s'),
+    		            'date_modified' => date('Y-m-d G:i:s'),
+    		            'modified_user_id' => $mrchispaanalista->id,
+    		            'created_by'  => $mrchispaanalista->id,
+    		            'contratacion_id' => $mrchisparesponsable->id, 
+    		            'tipo_novedad' => 'solicitud_retiro',
+    		            'inicio_novedad' => $fechasancion, 
+    		            'causal_de_retiro' => 'negocio_justa_causa', 
+    		            'observaciones' => 'Proceso disciplinario numero '. $proceso->consecutivo ,
+    		            'centrocosto_id_actual' => $mrchisparesponsable->centrocosto_id_actual, 
+    		            'subcentrocosto_id_actual' => $mrchisparesponsable->subcentrocosto_id_actual, 
+    		            'contratante_actual' => $mrchisparesponsable->contratante_actual,
+    		            'estado' => 'generada',
+    		            'campania_id_actual' => $mrchisparesponsable->campania_id_actual, 
+    		            'cliente_id_actual'  => $mrchisparesponsable->cliente_id_actual, 
+    		            'volver_a_contratar' => 'no', 
+    		            'numero' => $numero->numero + 1,
+    		            'comentarios' => 'Generado por modulo Disciplinarios',
+    		            
+    		    ];
+    		    
+    		    $novedad = \App\MrChispaNovedadesPersonalModel::create($parametros);
+    		    
+    		    
+    		    
+    		}
+    		/// FIN GENERAR NOVEDAD DE RETIRO EN MRCHISPA
+    		
     		DB::commit();
-    		
-    		
     		
     	} catch (Exception $e){
     		
@@ -453,6 +703,8 @@ class DSC_FallosController extends Controller
     			$fechaprogramada = $descargos->fechaprogramada;
     			$descargos->fechaprogramada = $request['nuevafechaprogramada'];
     			$descargos->userdiligencio_id = Auth::user()->id;
+    			$descargos->useranalista_id = \App\Helpers::getIdUsuarioFromPersonaId($request['analista_idpersonas']);
+    			$descargos->sedes_idsedes = $request['sedes_idsedes'];
     			$descargos->save();
 
     			$proceso = \App\DSC_ProcesosModel::find($request['dsc_procesos_iddsc_procesos']);
@@ -498,12 +750,16 @@ class DSC_FallosController extends Controller
     public function show($id)
     {
 
-    	$proceso = \App\View_DSC_ListadoprocesosModel::where(['iddsc_procesos'=>$id])->first();
+    	$proceso = \App\Helpers::getInfoProceso($id); 
+    	// \App\View_DSC_ListadoprocesosModel::where(['iddsc_procesos'=>$id])->first();
     	
     	if($proceso->dsc_estadosproceso_iddsc_estadosproceso != 9 && $proceso->dsc_estadosproceso_iddsc_estadosproceso != 6){
     		return redirect('disciplinarios');
     	}
     	
+    	$descargos = \App\Helpers::getInfoDescargos($id);
+    	$descargos = $descargos[0];
+    	/*
     	$descargos = \App\DSC_ProcesosHasDescargosModel::select([
     			'iddsc_descargos',
     			'dsc_procesos_iddsc_procesos',
@@ -521,6 +777,8 @@ class DSC_FallosController extends Controller
     			'dsc_procesos_iddsc_procesos' => $id,
     			'dsc_procesos_has_dsc_descargos.estado' => true,
     	])->first();
+    	
+    	*/
     	
     	$tiposdecisionesproceso = \App\DSC_TiposdecisionesprocesoModel::pluck('nombre','iddsc_tiposdecisionesproceso');
     	

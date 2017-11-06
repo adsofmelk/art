@@ -19,9 +19,45 @@ class DSC_DescargosController extends Controller
      */
     public function index()
     {
-       	
+    	$me = Auth::user();
+    	
+    	if( $me->hasRole('Admin')
+    			|| $me->hasRole('Analista de Relaciones Laborales')
+    			|| $me->hasRole('Gerente de Relaciones Laborales')
+    			|| $me->hasRole('Gerente de Relaciones Laborales')
+    			|| $me->hasRole('Gerente de Procesos')){ //PERFILES AUTORIZADOS A CONSULTAR TODOS LOS PROCESOS
+    				
+    				$procesos = \App\View_DSC_ListadoprocesosModel::where(['dsc_estadosproceso_iddsc_estadosproceso' => 5,])
+    				->orwhere(['dsc_estadosproceso_iddsc_estadosproceso' => 9,])
+    				->orderby('fechaetapa','DESC')
+    				->get()->toArray();
+    				foreach($procesos as $key => $val){
+    					
+    					$procesos[$key]['actions'] =\App\Helpers::generarBotonVinculoProceso($val['iddsc_procesos'], $val['dsc_estadosproceso_iddsc_estadosproceso']);
+    				}
+    				
+    				return response()->json($procesos);
+    				
+    	}else if($me->hasRole('Director Operativo')){
+    		
+    		
+    		$procesos = \App\View_DSC_ListadoprocesosModel::where(['dsc_estadosproceso_iddsc_estadosproceso' => 5,'solicitante_id' => $me->id,])
+    		->orwhere(['dsc_estadosproceso_iddsc_estadosproceso' => 9,'solicitante_id' => $me->id,])
+    		->orderby('fechaetapa','DESC')
+    		->get()->toArray();
+    		foreach($procesos as $key => $val){
+    			
+    			$procesos[$key]['actions'] =\App\Helpers::generarBotonVinculoProceso($val['iddsc_procesos'], $val['dsc_estadosproceso_iddsc_estadosproceso']);
+    		}
+    		
+    		return response()->json($procesos);
+    		
+    	}
+    	return false;
+    	
     	$procesos = \App\View_DSC_ListadoprocesosModel::where(['dsc_estadosproceso_iddsc_estadosproceso' => 5])
     	->orwhere(['dsc_estadosproceso_iddsc_estadosproceso' => 9])
+    	->orderby('fechaetapa','DESC')
     	->get()->toArray();
     	foreach($procesos as $key => $val){
     		
@@ -177,11 +213,16 @@ class DSC_DescargosController extends Controller
     			$fechaprogramada= $request['fechadescargos'] . " " . $request['horadescargos'].":". $request['minutodescargos'];
     			
     			
+    			$analistaid = \App\Helpers::getIdUsuarioFromPersonaId($request['analista_idpersonas']);
     			
+    			
+    			if(!$analistaid){
+    			    $analistaid = \App\Helpers::getUsuario();
+    			}
     			
     			$descargos = \App\DSC_DescargosModel::create([
     					'fechaprogramada'=> $fechaprogramada,
-    					'useranalista_id'=> $request['analista_idpersonas'],
+    					'useranalista_id'=> $analistaid,
     					'sedes_idsedes' => $request['sedes_idsedes'],
     					'dsc_estadosproceso_iddsc_estadosproceso' => $estadoproceso,
     					'dsc_tipogestion_iddsc_tipogestion' => $tipogestion,
@@ -245,7 +286,9 @@ class DSC_DescargosController extends Controller
      */
     public function edit($id)
     {
-    	$proceso = \App\View_DSC_ListadoprocesosModel::where(['iddsc_procesos'=>$id])->first();
+    	//$proceso = \App\View_DSC_ListadoprocesosModel::where(['iddsc_procesos'=>$id])->first();
+    	
+    	$proceso = \App\Helpers::getInfoProceso($id);
     	
     	if($proceso->dsc_estadosproceso_iddsc_estadosproceso != 5){
     		return redirect('disciplinarios');
@@ -266,6 +309,7 @@ class DSC_DescargosController extends Controller
     	
     	$tiposmotivoscierre = \App\DSC_TiposmotivoscierreModel::pluck('nombre','iddsc_tiposmotivoscierre');
     	
+    	/*
     	$descargos = \App\DSC_ProcesosHasDescargosModel::select([
     			'iddsc_descargos',
     			'dsc_procesos_iddsc_procesos',
@@ -282,6 +326,21 @@ class DSC_DescargosController extends Controller
     			'dsc_procesos_iddsc_procesos' => $id,
     			'dsc_procesos_has_dsc_descargos.estado' => true,
     	])->first();
+    	*/
+    	
+    	$descargos = \App\Helpers::getInfoDescargos($id);
+    	$descargos = $descargos[0];
+    	$sedes = \App\SedesModel::orderby('nombre','asc')->pluck('nombre','idsedes');
+    	
+    	$tmp= \App\Helpers::getListadoUsuariosActivosConPermisos(['add_descargos','edit_descargos']);
+    	$analista = [];
+    	foreach ($tmp as $row){
+    	    $analista[$row['idpersonas']]= $row['analista'];
+    	}
+    	
+    	//$analista = \App\View_UsersPersonasModel::select(DB::raw('concat(nombres," ",apellidos) as nombre, idpersonas'))
+    	//->pluck('nombre','idpersonas');
+    	
     	
     	return view('disciplinarios.descargos',[
     			'proceso' => $proceso,
@@ -293,6 +352,8 @@ class DSC_DescargosController extends Controller
     			'tiposmotivoscierre' => $tiposmotivoscierre,
     			'gestiones' => $gestiones,
     			'descargos' => $descargos,
+    	        'sedes' => $sedes,
+    	        'analista' => $analista,
     	]);
     }
 

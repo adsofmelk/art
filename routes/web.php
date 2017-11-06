@@ -1,5 +1,8 @@
 <?php
 
+use phpDocumentor\Reflection\Types\This;
+use App\Helpers;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -10,6 +13,8 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+
 
 // TEST DE PDF
 
@@ -47,7 +52,7 @@ Route::get('test2pdf',function(){
 		
 		\Mail::send('emails.notificacion', $data, function ($message) {
 			
-			$message->from('adsofmelk-29048c@inbox.mailtrap.io', 'OScar M Borja');
+			$message->from('adsofmelk-29048c@inbox.mailtrap.io', 'Oscar M Borja');
 			
 			$message->to('adsofmelk@gmail.com')->subject('Notificación');
 			
@@ -68,6 +73,15 @@ Route::get('/', function () {
 	}
     
 });
+
+
+///SOCIAL AUTH
+    Route::get('auth/social', 'Auth\SocialAuthController@show')->name('social.login');
+    Route::get('oauth/{driver}', 'Auth\SocialAuthController@redirectToProvider')->name('social.oauth');
+    Route::get('oauth/{driver}/callback', 'Auth\SocialAuthController@handleProviderCallback')->name('social.callback');
+
+///FIN SOCIAL AUTH
+
 
 Auth::routes();
 
@@ -97,6 +111,7 @@ Route::group( ['middleware' => ['auth']], function() {
 	Route::resource('disciplinarios', 'disciplinarios\DSC_DisciplinariosController');
 	Route::resource('dsc_tiposfalta', 'disciplinarios\DSC_TiposfaltaController');
 	
+	Route::get('dsc_listarprocesos/{order}/{offset}/{limit}/{filter?}/{search?}/{nombreestadoproceso?}', 'disciplinarios\DSC_ProcesosController@listarProcesos');
 	
 	Route::get('dsc_fallostemporalesprocesos', 'disciplinarios\DSC_FallosController@getFallosTemporales');
 	Route::resource('dsc_procesos', 'disciplinarios\DSC_ProcesosController');
@@ -105,6 +120,8 @@ Route::group( ['middleware' => ['auth']], function() {
 	Route::resource('dsc_descargosprocesos', 'disciplinarios\DSC_DescargosController');
 	Route::resource('dsc_actadescargosprocesos', 'disciplinarios\DSC_ActaDescargosController');
 	Route::resource('dsc_fallosprocesos', 'disciplinarios\DSC_FallosController');
+	
+	Route::resource('dsc_plantillas','disciplinarios\DSC_PlantillasController');
 	
 	
 	Route::resource('dsc_evaluacionprocesos', 'disciplinarios\DSC_GestionprocesoController');
@@ -117,7 +134,8 @@ Route::group( ['middleware' => ['auth']], function() {
 	
 	//DSC FILES
 	Route::get('dsc_file/{id}',function($id){
-		if(Storage::exists("dsc/" . $id )){
+		
+	    if(Storage::exists("dsc/" . $id )||Storage::exists("dsc/pruebasdescargos/" . $id )){
 			
 			if($prueba = \App\DSC_PruebasModel::find($id)){
 				
@@ -138,8 +156,10 @@ Route::group( ['middleware' => ['auth']], function() {
 			}
 			
 		}else{
+		    
 			header("HTTP/1.0 404 Not Found");
 		}
+		
 	});
 	
 	

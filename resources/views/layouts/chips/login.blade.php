@@ -24,9 +24,15 @@
                     				@include('layouts.chips.message')
                                 </div>	
                                 
+                                <div class='col-sm-6'>
+                                	{!!Form::submit('Ingresar',['class'=>'btn btn-lg btn-danger btn-block'])!!}
+                                	{!!Form::close()!!}
+                                </div>
                                 
-                                {!!Form::submit('Ingresar',['class'=>'btn btn-lg btn-danger btn-block'])!!}
-                                {!!Form::close()!!}
+                                <div class='col-sm-6'>
+                                	<a href="{{ route('social.oauth', 'google') }}" 
+                                		class="btn btn-lg waves-effect waves-light btn-block google">Google+</a>
+                                </div>
                             </fieldset>
                         </form>
                     </div>

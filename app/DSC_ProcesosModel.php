@@ -21,8 +21,13 @@ class DSC_ProcesosModel extends Model implements AuditableContract
 	
 	
     protected $fillable = [
+    		'consecutivo',
     		'fechaconocimiento', 
-    		'hechos', 
+    		'hechos',
+            'hechosverificados',
+            'reglamentointerno',
+            'codigodeetica',
+            'contratoindividualdetrabajo',
     		'solicitaretirotemporal', 
     		'retirotemporal',
     		'solicitante_id',
@@ -30,6 +35,9 @@ class DSC_ProcesosModel extends Model implements AuditableContract
     		'dsc_tiposfalta_iddsc_tiposfalta',
     		'dsc_nivelesafectacion_iddsc_nivelesafectacion',
     		'dsc_estadosproceso_iddsc_estadosproceso',
+            'dsc_tiposdecisionesevaluacion_iddsc_tiposdecisionesevaluacion',
+    		'created_at',
+    		'updated_at',
     ];
     
     protected $hidden = [

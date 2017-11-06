@@ -11,6 +11,7 @@ class MrChispaContratacionesModel extends Model
 	
 	protected $table = 'art_contratacion.contrataciones';
 	protected $primaryKey = 'id';
+	protected $keyType = 'string';
 	protected $fillable = [];
 	protected $hidden = [];
 	public $timestamps = false;

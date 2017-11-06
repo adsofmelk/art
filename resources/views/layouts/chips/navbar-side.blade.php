@@ -21,7 +21,7 @@
               </a>
               <ul class="treeview-menu" style="display: none;">
                 <li><a href="/disciplinarios/create">&nbsp;&nbsp;<i class="fa fa-plus fa-fw"></i> Nuevo Proceso</a></li>
-                <li><a href="/disciplinarios">&nbsp;&nbsp;<i class="fa fa-list fa-fw"></i> Procesos Activos</a></li>
+                <li><a href="/disciplinarios">&nbsp;&nbsp;<i class="fa fa-list fa-fw"></i> Listado de Procesos</a></li>
               </ul>
             </li>
           </ul>

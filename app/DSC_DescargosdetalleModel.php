@@ -13,7 +13,7 @@ class DSC_DescargosdetalleModel extends Model implements AuditableContract
 {
 	use Notifiable, HasRoles, Auditable, SoftDeletes;
 
-	public $incrementing = false; //Necesario para usar id alfanumerico
+	//public $incrementing = false; //Necesario para usar id alfanumerico
 	public $timestamps = true; //usa campos timestamp create_at, updated_at, deleted_at
 	protected $dates = ['deleted_at']; //Soft Delete
 	protected $table = 'dsc_descargosdetalle'; //nombre de la tabla
@@ -32,15 +32,16 @@ class DSC_DescargosdetalleModel extends Model implements AuditableContract
     		
     ];
     
+    
     public static function boot()
     {
     	parent::boot();
     	
     	static::creating(function($table)
     	{
-    		$table->iddsc_descargosdetalle= str_random(36); //crear id ramdom de tipo char
+    		//$table->iddsc_descargosdetalle= str_random(36); //crear id ramdom de tipo char
     	});
     }
-
+    
 
 }

@@ -39,6 +39,8 @@ class PersonasModel extends Model implements AuditableContract
 			'fechaingreso',
 			'fecharetiro',
 			'estado',
+			'job_id',
+			'cargo',
 			'sedes_idsedes',
 			'centroscosto_idcentroscosto',
 			'subcentroscosto_idsubcentroscosto',
@@ -48,6 +50,7 @@ class PersonasModel extends Model implements AuditableContract
 			'departamentos_iddepartamentos',
 			'ciudades_idciudades',
 			'barrios_idbarrios',
+			
 	];
 	
 	

@@ -40,6 +40,7 @@ $('document').ready(function(){
 			 $('#lb_subcentrocosto').html(result.nombresubcentrocosto + " ");
 			 $('#lb_campania').html(result.nombrecampania + " ");
 			 $('#lb_sede').html(result.nombresede + " ");
+			 $('#lb_cargo').html(result.cargo + " ");
 			 
 			 //FORM
 			 $('#responsable_id').val(id);
@@ -58,10 +59,30 @@ $('document').ready(function(){
 	 }
 	///FIN obtener datos de la cedula seleccionada en el autocomplete
 	 
+	 
+	 //INICIAR BOTON DE AGREGAR PRUEBAS
+	 
+	// $("#contenedor_boton_agregar_pruebas").append('<p class="btn btn-primary" id="btn_agregarprueba"> + Agregar otra Prueba</p>');
+	 $('#btn_agregarprueba').hide();
+	 
+	 $('#btn_agregarprueba').on('click', function(){
+		 var np = $('#numeropruebas').val() * 1;
+		 $("#contenedor_pruebas").append('<div class="col-sm-12"><div class="col-sm-12" div id="contenedor_prueba_' + np + '"><div class="col-sm-12"><strong>Prueba ' + (np + 1) +'</Strong></div><div class="col-sm-10"><input class="form-control" name="prueba_' + np + '" type="file" id="prueba_' + np + '"></div><div class="col-sm-2"><input type="button" class="btn btn-danger" onClick="borrarPrueba(' + np + ')" value="X"></div></div><input name="procesarprueba_' + np + '" type="hidden" id="procesarprueba_' + np + '" value="true" ></div>');
+		 
+		 	$('#numeropruebas').val( np + 1);
+		});
+	 
+	 
+	 
+	 // FIN BOTN DE AGREGAR PRUEBAS
+	 
 	 ///SELECCION DE TIPO DE FALTA
 	 $('#dsc_tiposfalta_iddsc_tiposfalta').change(function(){
 		 $('#spinner').show();
 		 $('#btn-save').prop('disabled', true);
+		 $('#numeropruebas').val(0);
+		 $('#btn_agregarprueba').hide();
+		 
 		 $.ajax({
 	         url: "/dsc_tiposfalta/"+$('#dsc_tiposfalta_iddsc_tiposfalta').val(),
 	         type: "GET",
@@ -69,11 +90,12 @@ $('document').ready(function(){
 	         //data: {'id':$('#dsc_tiposfalta_iddsc_tiposfalta').val()},
 	         contentType: 'application/json; charset=utf-8',
 	         
+	         
 	         success: function(result) {
 	        	 $("#contenedor_fechas").empty();
 				 $("#contenedor_pruebas").empty();
 				 $("#contenedor_boton_agregar_pruebas").empty();
-				 $('#numeropruebas').val(0);
+				 
 				 
 				 $('#contenedor_detalle').show();
 				 $('#lb_descripcion').html("<p><strong>" +  result.nombre + "</strong></p>" + result.descripcion);
@@ -93,21 +115,27 @@ $('document').ready(function(){
 				 
 				 $("#contenedor_pruebas").html("<p><strong>PRUEBAS ADJUNTAS</strong></p>");
 				 for (var i = 0; i < result.numeropruebas; i++){ //DOCUMENTOS ADJUNTOS DE LAS PRUEBAS
-					 $("#contenedor_pruebas").append('<div class="col-lg-12"><strong>Prueba ' + (i+1) +'</Strong><div id="contenedor_prueba_' + i + '"></div></div>');
-					 $("#contenedor_prueba_" + i).append('<input class="form-control" name="prueba_' + i + '" type="file" id="prueba_' + i + '" >');
+					 $("#contenedor_pruebas").append('<div class="col-sm-12"><div id="contenedor_prueba_' + i + '" class="col-sm-12"><div class="col-sm-12"><strong>Prueba ' + (i+1) +'</Strong></div></div></div>');
+					 $("#contenedor_prueba_" + i).append('<div class="col-sm-10"><input class="form-control" name="prueba_' + i + '" type="file" id="prueba_' + i + '" ></div><div class="col-sm-2"> </div>');
+					 
+					 $("#contenedor_prueba_" + i).append('<input name="procesarprueba_' + i + '" type="hidden" id="procesarprueba_' + i + '" value="true" >');
+					 
 					 
 				 }
 				 
 				 $('#numeropruebas').val(result.numeropruebas);
-				 
+				 /*
 				 $("#contenedor_boton_agregar_pruebas").append('<p class="btn btn-primary" id="btn_agregarprueba"> + Agregar otra Prueba</p>');
 				 
 				 $('#contenedor_boton_agregar_pruebas').on('click', '#btn_agregarprueba', function(){
 					 var np = $('#numeropruebas').val() * 1;
-					 $("#contenedor_pruebas").append('<div class="col-lg-12"><strong>Prueba ' + (np + 1) +'</Strong> <input class="form-control" name="prueba_' + np + '" type="file" id="prueba_' + np + '"></div>');
-					 	
+					 $("#contenedor_pruebas").append('<div class="col-sm-12"><div class="col-sm-12" div id="contenedor_prueba_' + np + '"><div class="col-sm-12"><strong>Prueba ' + (np + 1) +'</Strong></div><div class="col-sm-10"><input class="form-control" name="prueba_' + np + '" type="file" id="prueba_' + np + '"></div><div class="col-sm-2"><input type="button" class="btn btn-danger" onClick="borrarPrueba(' + np + ')" value="X"></div></div><input name="procesarprueba_' + np + '" type="hidden" id="procesarprueba_' + np + '" value="true" ></div>');
+					 
 					 	$('#numeropruebas').val( np + 1);
 					});
+				 */
+				 
+				 $('#btn_agregarprueba').show();
 				 
 				 $('#btn-save').prop('disabled', false);
 				 $('#spinner').hide();
@@ -152,15 +180,21 @@ $('document').ready(function(){
 	        		 $('#modalBody').html("El proceso ha sido guardado");
 	        		 $('#myModal').modal('toggle');
 	        		 $('#content').empty();
-	        		 $('#content').load('/dsc_procesos/' + result.iddsc_procesos);
+	        		 //$('#content').load('/dsc_procesos/' + result.iddsc_procesos);
+	        		 $('#content').load('/dsc_procesos/' + result.iddsc_procesos, function(){
+	        			 
+	        			 $('#spinner').hide();
+	        			 
+	        		 });
 	        	 }else{
 	        		 console.log(result);
 	        		 $('#modalHeader').html("Error");
 	        		 $('#modalBody').html(result.detalle);
 	        		 $('#myModal').modal('toggle');
 	        		 $('#btn-save').prop('disabled', false);
+	        		 $('#spinner').hide();
 	        	 }
-	        	 $('#spinner').hide();
+	        	 
 	         },
 	         error : function(jqXHR, textStatus, errorThrown) {
 	        	 
@@ -184,3 +218,7 @@ $('document').ready(function(){
 	 
 });
 
+function borrarPrueba(id){
+	$('#contenedor_prueba_'+id).hide();
+	$('#procesarprueba_'+id).val('false');
+}

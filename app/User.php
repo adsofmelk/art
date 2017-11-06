@@ -28,7 +28,15 @@ class User extends Authenticatable implements AuditableContract //Auditable
      * @var array
      */
     protected $fillable = [
-    		'email', 'password','personas_idpersonas'
+    		'email', 
+            'password',
+            'personas_idpersonas',
+            'firma',
+            // oAuth
+            'avatar', 
+            'provider_id', 
+            'provider',
+            'access_token'
     ];
     
     

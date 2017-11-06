@@ -4,5 +4,5 @@
       
     </div>
     <!-- Default to the left -->
-    <strong><img src='/images/logoarticulacion.png' style='width:100px;'/> 	
+    <strong><img src='/images/articulacionwhite.png' style='width:100px;'/> 	
 </footer>

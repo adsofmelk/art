@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@include('disciplinarios._menu')
+@include('disciplinarios._menu_noajax')
 
 @section('title', 'Diligencia de Descargos - Fallo')
 @section('desc','')

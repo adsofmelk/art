@@ -5,6 +5,9 @@ namespace App\Console;
 use Illuminate\Console\Scheduling\Schedule;
 use App\Console\Commands\AuthPermissionCommand;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use App\Console\Commands\CargaHistoricoCommand;
+use App\Console\Commands\CargaUsuariosCommand;
+use App\Console\Commands\ResetPasswordsCommand;
 
 class Kernel extends ConsoleKernel
 {
@@ -14,7 +17,10 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        AuthPermissionCommand::class
+        AuthPermissionCommand::class,
+    	CargaHistoricoCommand::class,
+        CargaUsuariosCommand::class,
+        ResetPasswordsCommand::class,
     ];
 
     /**

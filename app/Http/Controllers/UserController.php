@@ -22,6 +22,7 @@ class UserController extends Controller
     public function index()
     {
         $result = User::latest()->paginate();
+        $result->withPath(config('app.url') . '/users');
         
         foreach($result as $key=>$val){
         	$personas[$val->id] = \App\PersonasModel::find($val->personas_idpersonas);
