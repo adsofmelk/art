@@ -134,6 +134,7 @@
 	  		</div>
 	  		<div class='col-sm-8'  >
 	  			<div class='col-sm-12' id='contenedor_pruebas'></div>
+	  			<div class='col-sm-12' style='text-align: rigth; font-size : 20px; margin: 10px;'><strong>Importante: </strong>El nombre del archivo(s) debe ser relevante o descriptivo con la prueba aportada.</div>
 	  			<div class='row'>
 	  				<div class='col-sm-12' id='contenedor_boton_agregar_pruebas' style='padding:20px;'></div>
 	  				<div class="col-sm-1" >&nbsp;</div>

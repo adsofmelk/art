@@ -247,10 +247,13 @@ class DSC_ActaDescargosController extends Controller
         		'estado' => true,
         		'dsc_procesos_iddsc_procesos' => $id
         ])->first()){
-        	$descargos = \App\DSC_DescargosModel::find($procesohasdescargos->dsc_descargos_iddsc_descargos);
+        	
+            $descargos = \App\DSC_DescargosModel::find($procesohasdescargos->dsc_descargos_iddsc_descargos);
+        	
         	$view =  \View::make('disciplinarios.plantillaspdf._template_documento',[
         			'contenido'=>$descargos->actadescargos,
         	])->render();
+        	
         	$pdf = \App::make('dompdf.wrapper');
         	$pdf->loadHTML($view);
         	
@@ -364,7 +367,7 @@ class DSC_ActaDescargosController extends Controller
     	
     	
     	
-    	$plantilla = \App\DSC_PlantillasModel::find(1);
+    	$plantilla = \App\DSC_PlantillasModel::find(1); // CARGAR PLANTILLA ACTA DE DESCARGOS
     	
     	setlocale(LC_TIME, 'es_CO.UTF-8');
     	
@@ -380,7 +383,6 @@ class DSC_ActaDescargosController extends Controller
     	
     	$finhour = date('g:i a' , $time);
     	
-    	
     	$plantilla = \App\Helpers::remplazarCampos($plantilla->contenido, [
     			'{{$fecha_dias_letra}}' => \App\Helpers::numtoletras($Dday),
     			'{{$fecha_dias_numero}}' => $Dday,
@@ -389,7 +391,7 @@ class DSC_ActaDescargosController extends Controller
     			'{{$hora_inicio_descargos}}' => $hour,
     			'{{$nombre_responsable}}' => $proceso['nombreresponsable'],
     			'{{$documento_responsable}}' => $proceso['respodocumento'],
-    			'{{$nombre_analista}}' => $descargos->nombres . " " .$descargos->apellidos,
+    			'{{$nombre_analista}}' => $descargos->nombreanalista,
     			'{{$listado_cargos}}' => $proceso['nombrefalta'],
     			'{{$listado_pruebas}}' => $listadopruebas,
     			'{{$descripcion_echos}}' => $proceso['hechos'],

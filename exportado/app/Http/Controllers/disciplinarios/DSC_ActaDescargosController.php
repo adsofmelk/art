@@ -61,10 +61,12 @@ class DSC_ActaDescargosController extends Controller
     	    
     	    $implicado = \App\PersonasModel::find($proceso->responsable_id);
     	    
+    	    $analista = \App\Helpers::getUsuario();
+    	    
     	    $campos = [
     	            '{{$firmaanalista}}' => '<img src="'.$request['firmaanalista'].'" style="width:300px;"><br>___________________________',
-    	            '{{$nombreanalista}}' => "",
-    	            '{{$documentoanalista}}' => "",
+    	            '{{$nombreanalista}}' => $analista->nombres . " " . $analista->apellidos,
+    	            '{{$documentoanalista}}' => 'C.C. ' . $analista->documento,
     	            '{{$firmaimplicado}}' => '<img src="'.$request['firmaimplicado'].'" style="width:300px;"><br>___________________________',
     	            '{{$nombreimplicado}}' => $implicado->nombres . " ". $implicado->apellidos,
     	            '{{$documentoimplicado}}' => "CC. ".$request['documentoresponsable'],
@@ -75,6 +77,12 @@ class DSC_ActaDescargosController extends Controller
     	                '{{$firmatestigo1}}' => '<img src="'.$request['firmatestigo'].'" style="width:300px;"><br>___________________________',
     	                '{{$nombretestigo1}}'  => $request['nombretestigo'],
     	                '{{$documentotestigo1}}'  => "CC. ".$request['documentotestigo']."<br><strong>Testigo</strong>",
+    	        ]);
+    	    }else{
+    	        $campos = array_merge($campos,[
+    	                '{{$firmatestigo1}}' => "",
+    	                '{{$nombretestigo1}}'  => "",
+    	                '{{$documentotestigo1}}'  => "",
     	        ]);
     	    }
     	    
@@ -106,43 +114,7 @@ class DSC_ActaDescargosController extends Controller
     	    
     	    $pie_acta = \App\Helpers::cargarPlantilla(16, $campos);
     	    
-    	    /*
-    		$pie_acta = "
-			<table style='width:100%'>
-				<tr> 
-					    		      
-		      <td>
-				<img src='".$request['firmaanalista']."' style='width:300px;'><br>
-				_____________________________________<br>
-		        Analista de Relaciones Laborales<br>
-		      	<strong>BRM S.A.</strong></td>
-		
-		      <td>
-				<img src='".$request['firmaimplicado']."' style='width:300px;'><br>
-				_____________________________________<br>
-		        C.C. " . $request['documentoresponsable'] . "<br>
-		      	<strong>El trabajador</strong></td>
-				</tr>";
-    		
-    		if(isset($request['firmatestigo'])){
-    			
-    			$pie_acta .= "<tr>".
-      			"<td colspan='2'>
-				<img src='".$request['firmatestigo']."' style='width:300px;'><br>
-				_____________________________________<br>
-				" . $request['nombretestigo'] . "<br>
-		        C.C. " . $request['documentotestigo'] . "<br>
-		      	<strong>Testigo</strong></td>".
-      			"</tr>";
-    		}
-    		
-    		$pie_acta .= "
-			</table>";
-    		
-    		*/
-    		
-    		
-    		
+    	   
     		//ACTUALIZAR PROCESO
     		$proceso->dsc_estadosproceso_iddsc_estadosproceso = 9;
     		

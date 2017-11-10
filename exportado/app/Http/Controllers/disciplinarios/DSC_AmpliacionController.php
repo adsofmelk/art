@@ -92,12 +92,17 @@ class DSC_AmpliacionController extends Controller
         
         //verificar numero de archivos
         for($i = 0; $i < $request['numeropruebas']; $i++){
-        	if(!$request->hasFile('prueba_'.$i)){
-        		return response()->json([
-        				'estado' => false,
-        				'detalle' => "no se encuentra la prueba o excede el tamaño máximimo permitido" . $i,
-        		]);
-        	}
+            
+            if($request['procesarprueba_'.$i] == 'true'){
+                
+                if(!$request->hasFile('prueba_'.$i)){
+                    return response()->json([
+                            'estado' => false,
+                            'detalle' => "no se encuentra la prueba o excede el tamaño máximimo permitido" . $i,
+                    ]);
+                }
+            }
+        	
         }
         
         try{
@@ -108,22 +113,26 @@ class DSC_AmpliacionController extends Controller
         
 	        for($i = 0; $i < $request['numeropruebas']; $i++){
 	        	
+	            if($request['procesarprueba_'.$i] == 'true'){
+	                
+	                $file = $request->file('prueba_'.$i);
+	                
+	                $mime = ($file->getMimeType() != null)? $file->getMimeType() : "";
+	                $extension = ($file->extension() != null)? $file->extension() : '';
+	                
+	                $prueba = \App\DSC_PruebasModel::create([
+	                        'extension' => $extension,
+	                        'mime' => $mime,
+	                        'descripcion' => $file->getClientOriginalName(),
+	                        'dsc_estadosprueba_iddsc_estadosprueba' => 1,
+	                        'dsc_procesos_iddsc_procesos' => $proceso->iddsc_procesos,
+	                ]);
+	                if($prueba){
+	                    \Storage::disk('local')->put('dsc/'.$prueba->iddsc_pruebas,\File::get($file));
+	                }
+	                
+	            }
 	        	
-	        	$file = $request->file('prueba_'.$i);
-	        	
-	        	$mime = ($file->getMimeType() != null)? $file->getMimeType() : "";
-	        	$extension = ($file->extension() != null)? $file->extension() : '';
-	        	
-	        	$prueba = \App\DSC_PruebasModel::create([
-	        			'extension' => $extension,
-	        			'mime' => $mime,
-	        			'descripcion' => $file->getClientOriginalName(),
-	        			'dsc_estadosprueba_iddsc_estadosprueba' => 1,
-	        			'dsc_procesos_iddsc_procesos' => $proceso->iddsc_procesos,
-	        	]);
-	        	if($prueba){
-	        		\Storage::disk('local')->put('dsc/'.$prueba->iddsc_pruebas,\File::get($file));
-	        	}
 	        	
 	        }//end for
 	        // FIN AGREGAR ARCHIVOS ADJUNTOS

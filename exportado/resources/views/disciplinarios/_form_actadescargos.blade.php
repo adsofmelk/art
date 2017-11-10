@@ -146,8 +146,8 @@
                             			</div>
                             			<div>
                             			      <p><br>
-                            			      {{Form::text('actatestigo1nombre','',['id'=>'actatestigo1nombre','class'=>'form-control','placeholder' => 'nombre'])}}<br>
-                            			      {{Form::text('actatestigo1documento','',['id'=>'actatestigo1documento','class'=>'form-control','placeholder' => 'documento'])}}<br>
+                            			      {{Form::text('actatestigo1nombre','',['id'=>'actatestigo1nombre','class'=>'form-control datotestigo','placeholder' => 'nombre'])}}<br>
+                            			      {{Form::text('actatestigo1documento','',['id'=>'actatestigo1documento','class'=>'form-control datotestigo','placeholder' => 'documento'])}}<br>
                             			        <br>
                             			      	<strong>Testigo 1</strong></p>
                             			</div>
@@ -175,8 +175,8 @@
                             			</div>
                             			<div>
                             			      <p><br>
-                            			      {{Form::text('actatestigo2nombre','',['id'=>'actatestigo2nombre','class'=>'form-control','placeholder' => 'nombre'])}}<br>
-                            			      {{Form::text('actatestigo2documento','',['id'=>'actatestigo2documento','class'=>'form-control','placeholder' => 'documento'])}}<br>
+                            			      {{Form::text('actatestigo2nombre','',['id'=>'actatestigo2nombre','class'=>'form-control datotestigo','placeholder' => 'nombre'])}}<br>
+                            			      {{Form::text('actatestigo2documento','',['id'=>'actatestigo2documento','class'=>'form-control datotestigo','placeholder' => 'documento'])}}<br>
                             			        <br>
                             			      	<strong>Testigo 2</strong></p>
                             			</div>

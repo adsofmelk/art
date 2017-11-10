@@ -339,7 +339,7 @@ class DSC_FallosController extends Controller
 
     			$descargos->dsc_estadosproceso_iddsc_estadosproceso = $estadoproceso;
     			$descargos->iniciodiligencia = $request['iniciodiligencia'];
-    			$descargos->findiligencia = date('Y-m-d h:i:s');
+    			$descargos->findiligencia = date('Y-m-d G:i:s');
     			$descargos->asistio = true;
     			$descargos->userdiligencio_id = Auth::user()->id;
     			$descargos->save();
@@ -408,7 +408,7 @@ class DSC_FallosController extends Controller
 
     			$descargos->dsc_estadosproceso_iddsc_estadosproceso = $estadoproceso;
     			$descargos->iniciodiligencia = $request['iniciodiligencia'];
-    			$descargos->findiligencia = date('Y-m-d h:i:s');
+    			$descargos->findiligencia = date('Y-m-d G:i:s');
     			$descargos->asistio = false;
     			$descargos->textodelfallo = $request['observacionesausencia'];
     			$descargos->fechassancion = $request['fechassancion'];
@@ -641,15 +641,15 @@ class DSC_FallosController extends Controller
     		    $numero = \App\MrChispaNovedadesPersonalModel::select(DB::raw('max(numero) as numero'))->first();
     		    
     		    $parametros = [
-    		            'date_entered' => date('Y-m-d h:i:s'),
-    		            'date_modified' => date('Y-m-d h:i:s'),
+    		            'date_entered' => date('Y-m-d G:i:s'),
+    		            'date_modified' => date('Y-m-d G:i:s'),
     		            'modified_user_id' => $mrchispaanalista->id,
     		            'created_by'  => $mrchispaanalista->id,
     		            'contratacion_id' => $mrchisparesponsable->id, 
     		            'tipo_novedad' => 'solicitud_retiro',
     		            'inicio_novedad' => $fechasancion, 
     		            'causal_de_retiro' => 'negocio_justa_causa', 
-    		            'observaciones' => $request['textodelfallo'],
+    		            'observaciones' => 'Proceso disciplinario numero '. $proceso->consecutivo ,
     		            'centrocosto_id_actual' => $mrchisparesponsable->centrocosto_id_actual, 
     		            'subcentrocosto_id_actual' => $mrchisparesponsable->subcentrocosto_id_actual, 
     		            'contratante_actual' => $mrchisparesponsable->contratante_actual,

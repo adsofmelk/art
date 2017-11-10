@@ -329,7 +329,7 @@ class DSC_GestionprocesoController extends Controller
     		
     		case '2':{//AMPLIACION DE PRUEBAS
     			//ENVIAR CORREO DE NOTIFICACION SOBRE ESTADO DEL PROCESO
-    			\App\Helpers::emailInformarEstadoProceso($proceso->iddsc_procesos);
+    		    \App\Helpers::emailInformarEstadoProceso($proceso->iddsc_procesos, $request['explicaciondecision']);
     			
     			break;
     		}

@@ -53,6 +53,7 @@ class DSC_DocumentosPDFController extends Controller
 				'dsc_procesos_iddsc_procesos' => $id
 		])->first()){
 			$descargos = \App\DSC_DescargosModel::find($procesohasdescargos->dsc_descargos_iddsc_descargos);
+			
 			$view =  \View::make('disciplinarios.plantillaspdf._template_documento',[
 					'contenido'=>$descargos->actadescargos,
 			])->render();

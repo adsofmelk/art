@@ -27,7 +27,7 @@
 		  	
 		  	<div class = 'col-sm-3 form-group'>
 		  		<strong>Fecha y hora de inicio: </strong>{{date('Y-m-d h:i')}}
-		  		{{Form::hidden('iniciodiligencia',date("Y-m-d h:i:s"))}}
+		  		{{Form::hidden('iniciodiligencia',date("Y-m-d G:i:s"))}}
 		  	</div>
 		  	
 		  	<div class='col-sm-12'>&nbsp;<hr></div>
